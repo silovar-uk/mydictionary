@@ -31,6 +31,14 @@ blockquote { margin: 0; padding: 8px 0 8px 18px; border-left: 2px solid var(--ac
 .check-field input { width: 20px; height: 20px; }
 .sheet-footer { position: sticky; bottom: calc(-24px - env(safe-area-inset-bottom)); margin: 22px -20px calc(-24px - env(safe-area-inset-bottom)); padding: 13px 20px calc(13px + env(safe-area-inset-bottom)); display: flex; justify-content: flex-end; gap: 9px; background: rgba(245,240,228,.96); border-top: 1px solid var(--line); backdrop-filter: blur(10px); }
 
+.entry-create-panel { padding: 24px; margin-bottom: 28px; overflow: visible; }
+.entry-create-panel__intro { padding-bottom: 15px; margin-bottom: 2px; border-bottom: 1px solid var(--ink); }
+.entry-create-panel__intro h2 { margin: 5px 0 6px; font-family: var(--serif); font-size: 1.55rem; font-weight: 500; }
+.entry-create-panel__intro p { margin-bottom: 0; }
+.entry-create-actions { position: sticky; z-index: 12; bottom: calc(76px + env(safe-area-inset-bottom)); display: flex; justify-content: space-between; align-items: center; gap: 14px; margin: 24px -24px -24px; padding: 13px 24px; background: rgba(245,240,228,.97); border-top: 1px solid var(--line); box-shadow: 0 -10px 24px rgba(57,42,25,.07); backdrop-filter: blur(12px); }
+.entry-create-actions > span { color: var(--muted); font-size: .7rem; }
+.entry-create-actions .button { flex: 0 0 auto; }
+
 .loading-page { min-height: 60dvh; display: grid; place-content: center; justify-items: center; gap: 13px; color: var(--muted); }
 .book-loader { width: 56px; height: 68px; border: 1px solid var(--ink); display: grid; place-items: center; font-family: var(--serif); font-size: 1.4rem; animation: breathe 1.4s ease-in-out infinite alternate; }
 @keyframes breathe { from { transform: translateY(0); } to { transform: translateY(-5px); } }
@@ -38,3 +46,10 @@ blockquote { margin: 0; padding: 8px 0 8px 18px; border-left: 2px solid var(--ac
 .update-notice span { flex: 1; }
 .update-notice button { border: 1px solid rgba(255,255,255,.3); background: transparent; color: white; padding: 7px 9px; }
 .visually-hidden { position: absolute !important; width: 1px !important; height: 1px !important; overflow: hidden !important; clip: rect(0 0 0 0) !important; white-space: nowrap !important; }
+
+@media (max-width: 560px) {
+  .entry-create-panel { padding: 20px; }
+  .entry-create-actions { align-items: stretch; flex-direction: column; margin: 22px -20px -20px; padding: 12px 20px; }
+  .entry-create-actions > span { text-align: center; }
+  .entry-create-actions .button { width: 100%; }
+}
