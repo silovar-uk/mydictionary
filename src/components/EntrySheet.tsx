@@ -42,6 +42,13 @@ export function EntrySheet({ entry: initialEntry, tags, onClose, onChanged }: Pr
     onClose()
   }
 
+  function finishEditing(saved: DictionaryEntry) {
+    setEntry(saved)
+    setEditing(false)
+    onChanged(saved)
+    onClose()
+  }
+
   return (
     <>
       <div className="sheet-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
@@ -76,7 +83,7 @@ export function EntrySheet({ entry: initialEntry, tags, onClose, onChanged }: Pr
           </footer>
         </article>
       </div>
-      {editing && <EntryEditor entry={entry} tags={tags} onClose={() => setEditing(false)} onSaved={(saved) => { setEntry(saved); setEditing(false); onChanged(saved) }} />}
+      {editing && <EntryEditor entry={entry} tags={tags} onClose={() => setEditing(false)} onSaved={finishEditing} />}
     </>
   )
 }
