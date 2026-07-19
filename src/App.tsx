@@ -49,7 +49,7 @@ export default function App() {
   ]
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell app-shell--${route}`}>
       <header className="topbar">
         <button className="brand" type="button" onClick={() => navigate('today')}><span className="brand__mark">私</span><span>私辞典</span></button>
         <button className="top-search" type="button" onClick={() => navigate('dictionary')}><Icon name="search" /><span>{query || '辞典を検索'}</span></button>
