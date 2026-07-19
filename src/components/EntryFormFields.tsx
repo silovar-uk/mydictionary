@@ -108,6 +108,9 @@ interface Props {
   value: EntryFormState
   onChange: (next: EntryFormState) => void
   autoFocus?: boolean
+  onSave?: () => void
+  saving?: boolean
+  saveDisabled?: boolean
 }
 
 interface SectionProps {
@@ -135,7 +138,7 @@ function EntryFormSection({ id, number, title, description, children }: SectionP
   )
 }
 
-export function EntryFormFields({ value, onChange, autoFocus = false }: Props) {
+export function EntryFormFields({ value, onChange, autoFocus = false, onSave, saving = false, saveDisabled = false }: Props) {
   const formRef = useRef<HTMLDivElement>(null)
   const navRef = useRef<HTMLDivElement>(null)
   const tabRefs = useRef<Partial<Record<SectionId, HTMLButtonElement | null>>>({})
@@ -218,6 +221,17 @@ export function EntryFormFields({ value, onChange, autoFocus = false }: Props) {
             </button>
           ))}
         </div>
+        {onSave && (
+          <button
+            className="entry-form__nav-save"
+            type="button"
+            onClick={onSave}
+            disabled={saving || saveDisabled}
+            aria-label="保存して辞典一覧へ"
+          >
+            {saving ? '保存中' : '保存'}
+          </button>
+        )}
       </nav>
 
       <EntryFormSection id="word" number="01" title="言葉" description="辞典の見出しと、いまの育ち具合を記録する。">
