@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { createEntry } from '../services/entries'
 import { splitTags } from '../domain/normalize'
+import { navigate } from '../lib/navigation'
 import { Icon } from './Icon'
 
 interface Props {
@@ -31,7 +32,11 @@ export function QuickAdd({ compact = false, onSaved }: Props) {
       setTags('')
       setMessage('拾いました')
       onSaved?.(entry.id)
-      if (continueAdding) requestAnimationFrame(() => inputRef.current?.focus())
+      if (continueAdding) {
+        requestAnimationFrame(() => inputRef.current?.focus())
+      } else {
+        navigate('dictionary')
+      }
     } catch (error) {
       setMessage(error instanceof Error ? error.message : '保存できませんでした。')
     } finally {

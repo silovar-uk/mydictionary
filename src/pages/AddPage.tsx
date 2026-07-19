@@ -14,7 +14,7 @@ export function AddPage() {
   const [busy, setBusy] = useState(false)
 
   async function saveEntry() {
-    if (!form.headword.trim()) return
+    if (!form.headword.trim() || saving) return
     setSaving(true)
     setError('')
     try {
@@ -52,7 +52,14 @@ export function AddPage() {
           <h2>辞書項目をつくる</h2>
           <p className="muted">すべての項目を見ながら入力できる。見出し語だけでも保存でき、残りはあとから育てられる。</p>
         </div>
-        <EntryFormFields value={form} onChange={setForm} autoFocus />
+        <EntryFormFields
+          value={form}
+          onChange={setForm}
+          autoFocus
+          onSave={() => { void saveEntry() }}
+          saving={saving}
+          saveDisabled={!form.headword.trim()}
+        />
         {error && <p className="error-text">{error}</p>}
         <div className="entry-create-actions">
           <span>未入力の項目は、あとから編集できます。</span>
