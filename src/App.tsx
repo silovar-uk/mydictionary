@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { EntrySheet } from './components/EntrySheet'
 import { Icon } from './components/Icon'
-import { UpdateNotice } from './components/UpdateNotice'
 import { db } from './db/database'
 import type { DictionaryEntry } from './domain/types'
 import { useDictionaryData } from './hooks/useDictionaryData'
@@ -67,7 +66,6 @@ export default function App() {
         {navItems.map((item) => <button key={item.route} className={`${route === item.route ? 'is-active' : ''} ${item.route === 'add' ? 'bottom-nav__add' : ''}`} type="button" onClick={() => navigate(item.route)}><span><Icon name={item.icon} /></span><small>{item.label}</small></button>)}
       </nav>
       {selectedEntry && <EntrySheet entry={selectedEntry} tags={tags} onClose={() => setSelectedEntry(null)} onChanged={(changed) => { if (changed) setSelectedEntry(changed) }} />}
-      <UpdateNotice />
     </div>
   )
 }
