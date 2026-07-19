@@ -43,7 +43,7 @@ export function EntryEditor({ entry, tags, onClose, onSaved }: Props) {
         {error && <p className="error-text">{error}</p>}
         <footer className="sheet-footer">
           <button className="button button--ghost" type="button" onClick={onClose}>閉じる</button>
-          <button className="button button--primary" type="button" onClick={() => void save()} disabled={saving || !form.headword.trim()}>{saving ? '保存中…' : '保存する'}</button>
+          <button className="button button--primary" type="button" onClick={() => void save()} disabled={saving || !form.headword.trim()}>{saving ? '保存中…' : '保存して辞典へ'}</button>
         </footer>
       </section>
     </div>
