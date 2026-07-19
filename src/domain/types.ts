@@ -72,6 +72,8 @@ export interface SettingRecord {
 export type EntryDraft = Pick<DictionaryEntry, 'headword'> &
   Partial<Omit<DictionaryEntry, 'id' | 'headword' | 'normalizedHeadword' | 'createdAt' | 'updatedAt' | 'revision'>> & {
     tagNames?: string[]
+    createdAt?: string
+    updatedAt?: string
   }
 
 export type EntryUpdate = Partial<Omit<DictionaryEntry, 'id' | 'createdAt' | 'revision'>> & {
