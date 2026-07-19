@@ -11,7 +11,9 @@ import { navigate } from '../lib/navigation'
 
 export function TodayPage({ entries, tags, onOpen, backupDue }: { entries: DictionaryEntry[]; tags: Tag[]; onOpen: (entry: DictionaryEntry) => void; backupDue: boolean }) {
   const todaySeed = new Date().toLocaleDateString('sv-SE')
-  const todayEntries = useMemo(() => buildDiscoveryPage(entries, 'thoughtful', 3, seededRandom(todaySeed)), [entries, todaySeed])
+  const todayEntries = useMemo(() => buildDiscoveryPage(entries, 'thoughtful', 4, seededRandom(todaySeed)), [entries, todaySeed])
+  const featured = todayEntries[0]
+  const leafEntries = todayEntries.slice(1)
   const recent = entries.slice(0, 4)
   const growing = entries.filter((entry) => entry.status === 'growing').slice(0, 3)
 
@@ -31,30 +33,55 @@ export function TodayPage({ entries, tags, onOpen, backupDue }: { entries: Dicti
 
   return (
     <main className="page page--today">
-      <section className="hero hero--with-count">
+      <section className="today-intro">
         <div>
-          <div className="eyebrow">TODAY'S LEAF</div>
-          <h1>今日の頁</h1>
-          <p>{entries.length.toLocaleString('ja-JP')}語のなかから、今日の三語。</p>
+          <div className="eyebrow">TODAY'S ENCOUNTER</div>
+          <h1>今日は、この言葉から。</h1>
         </div>
-        <div className="dictionary-count"><strong>{entries.length}</strong><span>entries</span></div>
+        <p>{entries.length.toLocaleString('ja-JP')}語のなかから、忘れかけた一語が戻ってきた。</p>
       </section>
-      {backupDue && <button className="backup-reminder" type="button" onClick={() => navigate('data')}><Icon name="download" /><span><strong>そろそろバックアップ</strong><small>言葉を端末の外にも残しておく</small></span><Icon name="arrow" /></button>}
-      <div className="today-leaf paper-page">
-        <div className="paper-page__rule"><span>{todaySeed.replaceAll('-', '.')}</span><span>私辞典</span></div>
-        {todayEntries.map((entry, index) => (
-          <button key={entry.id} className="today-entry" type="button" onClick={() => onOpen(entry)}>
-            <span className="today-entry__number">0{index + 1}</span>
-            <span className="today-entry__content">
-              <span className="today-entry__reading">{entry.reading || ENTRY_TYPE_LABELS[entry.entryType]}</span>
-              <strong>{entry.headword}</strong>
-              <span>{entry.shortMeaning || entry.whySaved || '今日は、意味を決めずに眺める。'}</span>
+
+      {featured && (
+        <section className="today-cover" aria-label="今日の一語">
+          <span className="today-cover__sheet today-cover__sheet--back" aria-hidden="true" />
+          <span className="today-cover__sheet today-cover__sheet--middle" aria-hidden="true" />
+          <button className="today-cover__face" type="button" onClick={() => onOpen(featured)}>
+            <span className="today-cover__topline">
+              <span>{todaySeed.replaceAll('-', '.')}</span>
+              <span>NO. {String(entries.length).padStart(4, '0')}</span>
             </span>
-            <Icon name="arrow" />
+            <span className="today-cover__seal" aria-hidden="true">私</span>
+            <span className="today-cover__reading">{featured.reading || ENTRY_TYPE_LABELS[featured.entryType]}</span>
+            <strong>{featured.headword}</strong>
+            <span className="today-cover__meaning">{featured.shortMeaning || featured.whySaved || featured.encounterContext || 'まだ説明のない言葉。だから、もう一度ひらく。'}</span>
+            <span className="today-cover__action">今日の一語をひらく <Icon name="arrow" /></span>
           </button>
-        ))}
-        <div className="paper-page__folio">— {String(new Date().getDate()).padStart(3, '0')} —</div>
-      </div>
+        </section>
+      )}
+
+      {backupDue && <button className="backup-reminder" type="button" onClick={() => navigate('data')}><Icon name="download" /><span><strong>そろそろバックアップ</strong><small>言葉を端末の外にも残しておく</small></span><Icon name="arrow" /></button>}
+
+      {leafEntries.length > 0 && (
+        <section className="section-block section-block--today-leaf">
+          <div className="section-heading"><div><div className="eyebrow">THE REST OF TODAY</div><h2>今日の余白</h2></div><small className="section-note">主役のそばにいた言葉</small></div>
+          <div className="today-leaf paper-page">
+            <div className="paper-page__rule"><span>{todaySeed.replaceAll('-', '.')}</span><span>私辞典</span></div>
+            {leafEntries.map((entry, index) => (
+              <button key={entry.id} className="today-entry" type="button" onClick={() => onOpen(entry)}>
+                <span className="today-entry__number">0{index + 2}</span>
+                <span className="today-entry__content">
+                  <span className="today-entry__reading">{entry.reading || ENTRY_TYPE_LABELS[entry.entryType]}</span>
+                  <strong>{entry.headword}</strong>
+                  <span>{entry.shortMeaning || entry.whySaved || '今日は、意味を決めずに眺める。'}</span>
+                </span>
+                <Icon name="arrow" />
+              </button>
+            ))}
+            <div className="paper-page__folio">— {String(new Date().getDate()).padStart(3, '0')} —</div>
+          </div>
+        </section>
+      )}
+
       <QuickAdd compact />
       {growing.length > 0 && (
         <section className="section-block">
