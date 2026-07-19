@@ -76,11 +76,12 @@ export function entryToFormState(entry: DictionaryEntry, tags: Tag[]): EntryForm
 }
 
 export function entryInputFromForm(form: EntryFormState) {
+  const { tags, examples, ...entryFields } = form
   return {
-    ...form,
+    ...entryFields,
     sourceType: form.sourceType as SourceType | '',
-    examples: form.examples.split(/\r?\n/).map((value) => value.trim()).filter(Boolean),
-    tagNames: splitTags(form.tags)
+    examples: examples.split(/\r?\n/).map((value) => value.trim()).filter(Boolean),
+    tagNames: splitTags(tags)
   }
 }
 
