@@ -44,19 +44,19 @@ export function AddPage() {
 
   return (
     <main className="page page--add">
-      <header className="page-heading"><div><div className="eyebrow">CREATE ENTRY</div><h1>拾う</h1><p>ひとまず一語でも、出典や使い方まででも。今わかるところまで残す。</p></div></header>
+      <header className="page-heading"><div><div className="eyebrow">CREATE ENTRY</div><h1>拾う</h1><p>言葉、意味、出会い、出典、活用。わかるところまで、ひと続きの用紙に残す。</p></div></header>
 
       <section className="entry-create-panel paper-panel">
         <div className="entry-create-panel__intro">
           <div className="eyebrow">NEW ENTRY</div>
           <h2>辞書項目をつくる</h2>
-          <p className="muted">見出し語だけでも保存できる。あとから同じ項目を編集できる。</p>
+          <p className="muted">すべての項目を見ながら入力できる。見出し語だけでも保存でき、残りはあとから育てられる。</p>
         </div>
         <EntryFormFields value={form} onChange={setForm} autoFocus />
         {error && <p className="error-text">{error}</p>}
         <div className="entry-create-actions">
-          <span>保存すると辞典一覧へ移動します。</span>
-          <button className="button button--primary" type="button" onClick={() => void saveEntry()} disabled={saving || !form.headword.trim()}><Icon name="plus" /> {saving ? '保存中…' : '保存して一覧へ'}</button>
+          <span>未入力の項目は、あとから編集できます。</span>
+          <button className="button button--primary" type="button" onClick={() => void saveEntry()} disabled={saving || !form.headword.trim()}><Icon name="plus" /> {saving ? '保存中…' : '保存して辞典へ'}</button>
         </div>
       </section>
 
