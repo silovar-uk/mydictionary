@@ -10,8 +10,16 @@ function uuid(): string {
   return crypto.randomUUID()
 }
 
+function validIsoDate(value: string | undefined, fallback: string): string {
+  if (!value) return fallback
+  const timestamp = Date.parse(value)
+  return Number.isFinite(timestamp) ? new Date(timestamp).toISOString() : fallback
+}
+
 function createBaseEntry(draft: EntryDraft, tagIds: string[]): DictionaryEntry {
   const now = nowIso()
+  const createdAt = validIsoDate(draft.createdAt, now)
+  const updatedAt = validIsoDate(draft.updatedAt, createdAt)
   const headword = draft.headword.trim()
   return {
     id: uuid(),
@@ -37,8 +45,8 @@ function createBaseEntry(draft: EntryDraft, tagIds: string[]): DictionaryEntry {
     tagIds,
     status: draft.status ?? 'captured',
     favorite: draft.favorite ?? false,
-    createdAt: now,
-    updatedAt: now,
+    createdAt,
+    updatedAt,
     lastViewedAt: '',
     viewCount: 0,
     randomShownAt: '',
@@ -79,7 +87,6 @@ export async function createEntry(draft: EntryDraft): Promise<DictionaryEntry> {
   notifyDatabaseChanged()
   return created
 }
-
 
 export async function createEntriesBatch(drafts: EntryDraft[]): Promise<DictionaryEntry[]> {
   const validDrafts = drafts.filter((draft) => draft.headword.trim())
