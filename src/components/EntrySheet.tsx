@@ -30,7 +30,7 @@ function formatDate(value: string): string {
 
 function EditableSection({ title, empty = false, children, onEdit, className = '' }: EditableSectionProps) {
   function handleKeyDown(event: KeyboardEvent<HTMLElement>) {
-    if (event.key !== 'Enter' && event.key !== ' ') return
+    if (event.target !== event.currentTarget || (event.key !== 'Enter' && event.key !== ' ')) return
     event.preventDefault()
     onEdit()
   }
@@ -110,7 +110,7 @@ export function EntrySheet({ entry: initialEntry, tags, onClose, onChanged }: Pr
             tabIndex={0}
             onClick={() => setEditingSection('heading')}
             onKeyDown={(event) => {
-              if (event.key === 'Enter' || event.key === ' ') {
+              if (event.target === event.currentTarget && (event.key === 'Enter' || event.key === ' ')) {
                 event.preventDefault()
                 setEditingSection('heading')
               }
@@ -159,7 +159,7 @@ export function EntrySheet({ entry: initialEntry, tags, onClose, onChanged }: Pr
               {(entry.sourceTitle || entry.sourceAuthor || entry.sourceUrl || entry.sourceLocator) ? (
                 <>
                   <p>{entry.sourceType ? SOURCE_TYPE_LABELS[entry.sourceType] : ''}{entry.sourceTitle ? `　${entry.sourceTitle}` : ''}{entry.sourceAuthor ? `／${entry.sourceAuthor}` : ''}{entry.sourceLocator ? `　${entry.sourceLocator}` : ''}</p>
-                  {entry.sourceUrl && <a className="text-link" href={entry.sourceUrl} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()}>出典を開く <Icon name="arrow" /></a>}
+                  {entry.sourceUrl && <a className="text-link" href={entry.sourceUrl} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()} onKeyDown={(event) => event.stopPropagation()}>出典を開く <Icon name="arrow" /></a>}
                 </>
               ) : <EmptyValue />}
             </EditableSection>
