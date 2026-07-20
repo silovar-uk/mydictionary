@@ -98,15 +98,17 @@ export function AddPage() {
           <h2>辞書項目をつくる</h2>
           <p className="muted">見出し語だけで保存できる。残りの項目は、あとから少しずつ育てられる。</p>
         </div>
-        <EntryFormFields
-          value={form}
-          onChange={setForm}
-          autoFocus={!draftRestored}
-          onSave={() => { void saveEntry() }}
-          saving={saving}
-          saveDisabled={!form.headword.trim()}
-        />
-        {error && <p className="error-text entry-save-error" role="alert">{error}</p>}
+        <div className="entry-create-panel__body">
+          <EntryFormFields
+            value={form}
+            onChange={setForm}
+            autoFocus={!draftRestored}
+            onSave={() => { void saveEntry() }}
+            saving={saving}
+            saveDisabled={!form.headword.trim()}
+          />
+          {error && <p className="error-text entry-save-error" role="alert">{error}</p>}
+        </div>
         <div className="entry-create-actions">
           <span>{form.headword.trim() ? '未入力の項目は、あとから編集できます。' : '見出し語を入れると保存できます。'}</span>
           <button className="button button--primary" type="button" onClick={() => void saveEntry()} disabled={saving || !form.headword.trim()}><Icon name="plus" /> {saving ? '保存中…' : '保存して辞典へ'}</button>
