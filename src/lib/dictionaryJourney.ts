@@ -22,7 +22,7 @@ export interface DictionarySaveFlash {
   createdAt: number
 }
 
-interface AddDraft {
+export interface AddDraft {
   form: EntryFormState
   savedAt: number
 }
@@ -76,11 +76,12 @@ export function updateDictionaryViewState(next: Partial<DictionaryViewState>): D
 }
 
 export function startAddFromDictionary(query: string, prefillHeadword = ''): void {
-  writeJson<AddContext>(window.sessionStorage, ADD_CONTEXT_KEY, {
+  const value: AddContext = {
     fromDictionary: true,
     query,
     prefillHeadword
-  })
+  }
+  writeJson(window.sessionStorage, ADD_CONTEXT_KEY, value)
 }
 
 export function readAddContext(): AddContext | null {
@@ -92,11 +93,12 @@ export function clearAddContext(): void {
 }
 
 export function setDictionarySaveFlash(entryId: string, message = '保存しました'): void {
-  writeJson<DictionarySaveFlash>(window.sessionStorage, SAVE_FLASH_KEY, {
+  const value: DictionarySaveFlash = {
     entryId,
     message,
     createdAt: Date.now()
-  })
+  }
+  writeJson(window.sessionStorage, SAVE_FLASH_KEY, value)
 }
 
 export function consumeDictionarySaveFlash(): DictionarySaveFlash | null {
@@ -111,7 +113,8 @@ export function readAddDraft(): AddDraft | null {
 }
 
 export function writeAddDraft(form: EntryFormState): void {
-  writeJson<AddDraft>(window.localStorage, ADD_DRAFT_KEY, { form, savedAt: Date.now() })
+  const value: AddDraft = { form, savedAt: Date.now() }
+  writeJson(window.localStorage, ADD_DRAFT_KEY, value)
 }
 
 export function clearAddDraft(): void {
