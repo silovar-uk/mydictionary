@@ -4,7 +4,7 @@ import { Icon } from './components/Icon'
 import { db } from './db/database'
 import type { DictionaryEntry } from './domain/types'
 import { useDictionaryData } from './hooks/useDictionaryData'
-import { readDictionaryViewState, startAddFromDictionary, updateDictionaryViewState } from './lib/dictionaryJourney'
+import { clearAddContext, readDictionaryViewState, startAddFromDictionary, updateDictionaryViewState } from './lib/dictionaryJourney'
 import { navigate, type Route, useRoute } from './lib/navigation'
 import { AddPage } from './pages/AddPage'
 import { DataPage } from './pages/DataPage'
@@ -46,7 +46,10 @@ export default function App() {
   }
 
   function goTo(routeToOpen: Route) {
-    if (route === 'dictionary' && routeToOpen === 'add') startAddFromDictionary(query)
+    if (routeToOpen === 'add') {
+      if (route === 'dictionary') startAddFromDictionary(query)
+      else clearAddContext()
+    }
     navigate(routeToOpen)
   }
 
