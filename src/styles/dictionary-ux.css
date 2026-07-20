@@ -1,0 +1,18 @@
+.page--dictionary { position: relative; }
+.dictionary-heading { margin-bottom: 12px; }
+.dictionary-tools { position: sticky; top: calc(58px + env(safe-area-inset-top)); z-index: 18; padding: 5px 0 10px; background: rgba(233,227,214,.94); backdrop-filter: blur(16px); transition: padding .18s ease, box-shadow .18s ease, margin .18s ease; }
+.dictionary-tools.is-compact { margin-inline: -10px; padding: 7px 10px 9px; border-bottom: 1px solid var(--line); box-shadow: 0 10px 24px rgba(57,42,25,.07); }
+.dictionary-tools.is-compact .search-box--large { margin-top: 0; }
+.dictionary-tools.is-compact .search-box input { padding-block: 10px; }
+.dictionary-filter-row { display: grid; grid-template-columns: minmax(0,1fr) minmax(156px,190px); gap: 9px; align-items: end; }
+.status-chips { min-width: 0; display: flex; gap: 6px; overflow-x: auto; padding: 2px 1px; scrollbar-width: none; }
+.status-chips::-webkit-scrollbar { display: none; }
+.status-chips button { min-height: 40px; flex: 0 0 auto; border: 1px solid var(--line); border-radius: 99px; background: rgba(255,255,255,.3); padding: 8px 12px; color: var(--muted); font-size: .73rem; white-space: nowrap; cursor: pointer; transition: background-color .15s ease, color .15s ease, border-color .15s ease, transform .15s ease; }
+.status-chips button:active { transform: translateY(1px); }
+.status-chips button.is-active { border-color: var(--ink); background: var(--ink); color: var(--paper); }
+.dictionary-sort { display: grid; gap: 4px; min-width: 0; }
+.dictionary-sort > span { color: var(--muted); font-size: .62rem; letter-spacing: .08em; }
+.dictionary-sort select { width: 100%; min-height: 40px; border: 1px solid rgba(65,59,49,.22); border-radius: 3px; background: rgba(255,255,255,.4); color: var(--ink); padding: 8px 28px 8px 10px; font-size: .73rem; }
+.dictionary-condition-summary { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-top: 7px; color: var(--muted); font-size: .67rem; }
+.dictionary-condition-summary button { border: 0; background: transparent; padding: 5px 0; color: var(--accent); font-size: inherit; }
+.dictionary-tools.is-compact .dictionary-condition-summary { display: none; }
