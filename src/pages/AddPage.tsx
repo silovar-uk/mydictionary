@@ -7,7 +7,6 @@ import {
   readAddContext,
   readAddDraft,
   setDictionarySaveFlash,
-  updateDictionaryViewState,
   writeAddDraft
 } from '../lib/dictionaryJourney'
 import { navigate } from '../lib/navigation'
@@ -43,7 +42,7 @@ export function AddPage() {
 
   function returnToDictionary() {
     if (!isFormEmpty(form)) writeAddDraft(form)
-    updateDictionaryViewState({ scrollY: 0 })
+    clearAddContext()
     navigate('dictionary')
   }
 
