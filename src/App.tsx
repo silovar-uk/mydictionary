@@ -4,6 +4,7 @@ import { Icon } from './components/Icon'
 import { db } from './db/database'
 import type { DictionaryEntry } from './domain/types'
 import { useDictionaryData } from './hooks/useDictionaryData'
+import { clearAddContext, readDictionaryViewState, startAddFromDictionary, updateDictionaryViewState } from './lib/dictionaryJourney'
 import { navigate, type Route, useRoute } from './lib/navigation'
 import { AddPage } from './pages/AddPage'
 import { DataPage } from './pages/DataPage'
@@ -15,7 +16,7 @@ export default function App() {
   const route = useRoute()
   const { entries, tags, loading } = useDictionaryData()
   const [selectedEntry, setSelectedEntry] = useState<DictionaryEntry | null>(null)
-  const [query, setQuery] = useState('')
+  const [query, setQuery] = useState(() => readDictionaryViewState().query)
   const [backupDue, setBackupDue] = useState(false)
 
   useEffect(() => {
@@ -39,6 +40,19 @@ export default function App() {
     setSelectedEntry(entry)
   }
 
+  function changeQuery(value: string) {
+    setQuery(value)
+    updateDictionaryViewState({ query: value })
+  }
+
+  function goTo(routeToOpen: Route) {
+    if (routeToOpen === 'add') {
+      if (route === 'dictionary') startAddFromDictionary(query)
+      else clearAddContext()
+    }
+    navigate(routeToOpen)
+  }
+
   const navItems: { route: Route; label: string; icon: Parameters<typeof Icon>[0]['name'] }[] = [
     { route: 'today', label: '今日', icon: 'home' },
     { route: 'dictionary', label: '辞典', icon: 'book' },
@@ -56,14 +70,14 @@ export default function App() {
       {loading ? <div className="loading-page"><div className="book-loader">辞</div><span>頁をひらいています</span></div> : (
         <>
           {route === 'today' && <TodayPage entries={entries} tags={tags} onOpen={openEntry} backupDue={backupDue} />}
-          {route === 'dictionary' && <DictionaryPage entries={entries} tags={tags} initialQuery={query} onQueryChange={setQuery} onOpen={openEntry} />}
+          {route === 'dictionary' && <DictionaryPage entries={entries} tags={tags} initialQuery={query} onQueryChange={changeQuery} onOpen={openEntry} />}
           {route === 'add' && <AddPage />}
           {route === 'open' && <OpenPage entries={entries} tags={tags} onOpen={openEntry} />}
           {route === 'data' && <DataPage entries={entries} tags={tags} />}
         </>
       )}
       <nav className="bottom-nav" aria-label="メインメニュー">
-        {navItems.map((item) => <button key={item.route} className={`${route === item.route ? 'is-active' : ''} ${item.route === 'add' ? 'bottom-nav__add' : ''}`} type="button" onClick={() => navigate(item.route)}><span><Icon name={item.icon} /></span><small>{item.label}</small></button>)}
+        {navItems.map((item) => <button key={item.route} className={`${route === item.route ? 'is-active' : ''} ${item.route === 'add' ? 'bottom-nav__add' : ''}`} type="button" onClick={() => goTo(item.route)}><span><Icon name={item.icon} /></span><small>{item.label}</small></button>)}
       </nav>
       {selectedEntry && <EntrySheet entry={selectedEntry} tags={tags} onClose={() => setSelectedEntry(null)} onChanged={(changed) => { if (changed) setSelectedEntry(changed) }} />}
     </div>

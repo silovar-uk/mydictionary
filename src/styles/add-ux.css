@@ -1,0 +1,26 @@
+.add-return-context, .draft-restored { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin: -8px 0 14px; padding: 10px 12px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: rgba(255,255,255,.2); }
+.add-return-context button { display: inline-flex; align-items: center; gap: 5px; flex: 0 0 auto; border: 0; background: transparent; padding: 6px 0; color: var(--accent); font-weight: 700; font-size: .76rem; }
+.add-return-context button svg { width: 1rem; transform: rotate(180deg); }
+.add-return-context span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); font-size: .7rem; }
+.draft-restored { border-color: rgba(156,47,39,.22); background: rgba(156,47,39,.055); }
+.draft-restored > span { min-width: 0; display: grid; gap: 2px; }
+.draft-restored strong { font-family: var(--serif); font-size: .86rem; }
+.draft-restored small { color: var(--muted); font-size: .68rem; line-height: 1.45; }
+.draft-restored button { flex: 0 0 auto; border: 0; background: transparent; padding: 7px 0; color: var(--accent); font-size: .7rem; }
+.entry-save-error { margin-top: 14px; padding: 10px 12px; border-left: 2px solid var(--accent); background: rgba(156,47,39,.055); line-height: 1.55; }
+.entry-form__nav-button .entry-form__nav-check { position: absolute; top: 4px; right: 5px; width: 15px; height: 15px; display: none; place-items: center; border-radius: 50%; background: rgba(156,47,39,.1); color: var(--accent); font-family: inherit; font-size: .58rem; line-height: 1; }
+.entry-form__nav-button.has-content .entry-form__nav-check { display: grid; }
+.entry-form__nav-button.has-content:not(.is-active) { color: var(--ink); }
+.entry-form__nav-button:active, .entry-form__nav-save:active { transform: translateY(1px); }
+.entry-form__section:focus-within { outline: 1px solid rgba(156,47,39,.08); outline-offset: 4px; }
+.entry-form__field--headword small { color: var(--accent); }
+@media (max-width:560px) {
+  .add-return-context, .draft-restored { margin-inline: 0; }
+  .draft-restored { align-items: flex-start; }
+  .entry-form__nav-button .entry-form__nav-check { top: 3px; right: 3px; }
+}
+@media (max-width:360px) {
+  .add-return-context { align-items: flex-start; flex-direction: column; gap: 2px; }
+  .add-return-context span { width: 100%; }
+  .draft-restored { flex-direction: column; gap: 6px; }
+}
