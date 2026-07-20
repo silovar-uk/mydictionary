@@ -1,0 +1,74 @@
+@media (max-width: 560px) {
+  .page--add {
+    padding-right: max(12px, env(safe-area-inset-right));
+    padding-left: max(12px, env(safe-area-inset-left));
+  }
+
+  .page--add .page-heading {
+    padding-inline: 4px;
+  }
+
+  .page--add .entry-create-panel {
+    width: 100%;
+    min-width: 0;
+    padding: 0;
+  }
+
+  .page--add .entry-create-panel__intro {
+    margin: 0;
+    padding: 18px 16px 14px;
+  }
+
+  .page--add .entry-create-panel .entry-form {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .page--add .entry-create-panel .entry-form__nav {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin-inline: 0;
+    padding-inline: 10px;
+  }
+
+  .page--add .entry-create-panel .entry-form__nav-track {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .page--add .entry-create-panel .entry-form__section {
+    width: 100%;
+    min-width: 0;
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .page--add .entry-create-panel .entry-form__section::after {
+    left: 12px;
+  }
+
+  .page--add .entry-create-panel .entry-form__grid,
+  .page--add .entry-create-panel .field,
+  .page--add .entry-create-panel .check-field {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .page--add .entry-create-panel .field input,
+  .page--add .entry-create-panel .field textarea,
+  .page--add .entry-create-panel .field select {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .page--add .entry-create-panel > .error-text {
+    margin-inline: 12px;
+  }
+
+  .page--add .entry-create-actions {
+    margin: 0;
+    padding: 10px 12px;
+  }
+}
