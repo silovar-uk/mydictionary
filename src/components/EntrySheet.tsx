@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import type { KeyboardEvent, ReactNode } from 'react'
 import type { DictionaryEntry, Tag } from '../domain/types'
 import { ENTRY_TYPE_LABELS, SOURCE_TYPE_LABELS, STATUS_LABELS } from '../domain/types'
+import { openChatGPTForEntry } from '../lib/chatgpt'
 import { markEntryViewed, softDeleteEntry, toggleFavorite } from '../services/entries'
 import { Icon } from './Icon'
 import { EntryEditor } from './EntryEditor'
@@ -184,6 +185,7 @@ export function EntrySheet({ entry: initialEntry, tags, onClose, onChanged }: Pr
           <footer className="entry-footer">
             <div className="entry-dates">追加 {formatDate(entry.createdAt)}<br />更新 {formatDate(entry.updatedAt)}</div>
             <div className="action-row">
+              <button className="button button--ghost" type="button" onClick={() => void openChatGPTForEntry(entry, entryTags)}>ChatGPTで話す ↗</button>
               <button className="button button--ghost" type="button" onClick={() => setEditing(true)}><Icon name="edit" /> まとめて編集</button>
               <button className="button button--danger" type="button" onClick={() => void remove()}><Icon name="trash" /> 削除</button>
             </div>
