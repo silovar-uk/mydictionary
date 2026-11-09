@@ -33,6 +33,8 @@ export function TodayPage({ entries, tags, onOpen, backupDue }: { entries: Dicti
 
   return (
     <main className="page page--today">
+      <div className="today-workspace">
+        <div className="today-workspace__primary">
       <section className="today-intro">
         <div>
           <div className="eyebrow">TODAY'S ENCOUNTER</div>
@@ -59,6 +61,17 @@ export function TodayPage({ entries, tags, onOpen, backupDue }: { entries: Dicti
         </section>
       )}
 
+        </div>
+        <aside className="today-workspace__aside" aria-label="言葉を拾い、育てる">
+          <QuickAdd compact />
+          {growing.length > 0 && (
+            <section className="section-block today-workspace__growing">
+              <div className="section-heading"><div><div className="eyebrow">STILL GROWING</div><h2>育て途中</h2></div><button className="text-button" type="button" onClick={() => navigate('dictionary')}>すべて見る <Icon name="arrow" /></button></div>
+              <div className="lined-list">{growing.map((entry) => <EntryRow key={entry.id} entry={entry} tags={tags} onOpen={() => onOpen(entry)} />)}</div>
+            </section>
+          )}
+        </aside>
+      </div>
       {backupDue && <button className="backup-reminder" type="button" onClick={() => navigate('data')}><Icon name="download" /><span><strong>そろそろバックアップ</strong><small>言葉を端末の外にも残しておく</small></span><Icon name="arrow" /></button>}
 
       {leafEntries.length > 0 && (
@@ -82,13 +95,6 @@ export function TodayPage({ entries, tags, onOpen, backupDue }: { entries: Dicti
         </section>
       )}
 
-      <QuickAdd compact />
-      {growing.length > 0 && (
-        <section className="section-block">
-          <div className="section-heading"><div><div className="eyebrow">STILL GROWING</div><h2>育て途中</h2></div><button className="text-button" type="button" onClick={() => navigate('dictionary')}>すべて見る <Icon name="arrow" /></button></div>
-          <div className="lined-list">{growing.map((entry) => <EntryRow key={entry.id} entry={entry} tags={tags} onOpen={() => onOpen(entry)} />)}</div>
-        </section>
-      )}
       <section className="section-block">
         <div className="section-heading"><div><div className="eyebrow">RECENTLY FOUND</div><h2>最近拾った言葉</h2></div></div>
         <div className="lined-list">{recent.map((entry) => <EntryRow key={entry.id} entry={entry} tags={tags} onOpen={() => onOpen(entry)} />)}</div>
