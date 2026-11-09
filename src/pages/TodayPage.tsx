@@ -65,9 +65,6 @@ export function TodayPage({ entries, tags, onOpen, onViewAllRecent, backupDue }:
           <div className="lined-list today-recent__list">
             {recent.map((entry) => <EntryRow key={entry.id} entry={entry} tags={tags} onOpen={() => onOpen(entry)} />)}
           </div>
-          <button className="today-recent__footer" type="button" onClick={onViewAllRecent}>
-            辞典を追加順でひらく <Icon name="arrow" />
-          </button>
         </section>
 
         <aside className="today-workspace__aside" aria-label="今日の一語と言葉の登録">
