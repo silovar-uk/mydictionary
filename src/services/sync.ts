@@ -33,7 +33,7 @@ export interface SyncConflict {
   remote: unknown
 }
 export interface PairInfo { v: 1; endpoint: string; vaultId: string; secret: string }
-interface Payload {
+export interface Payload {
   schemaVersion: typeof FORMAT
   entries: DictionaryEntry[]
   tags: Tag[]
@@ -277,7 +277,7 @@ function mergeEntry(base: DictionaryEntry | undefined, local: DictionaryEntry | 
   result.randomShownCount = Math.max(local.randomShownCount, remote.randomShownCount)
   return result as unknown as DictionaryEntry
 }
-function merge(baseOriginal: Payload | null, localOriginal: Payload, remoteOriginal: Payload,
+export function merge(baseOriginal: Payload | null, localOriginal: Payload, remoteOriginal: Payload,
   choices: Choices): { merged: Payload; conflicts: SyncConflict[] } {
   const [base, local, remote] = alignTags(baseOriginal, localOriginal, remoteOriginal)
   const B = mapById(base?.entries || [])
