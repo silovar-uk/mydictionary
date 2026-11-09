@@ -1,0 +1,108 @@
+/* Reunion is a quiet local-only hint, never a blocking duplicate warning. */
+.reunion-ribbon {
+  min-width: 0;
+  width: 100%;
+  margin: 16px 0 8px;
+  padding: clamp(12px, 2vw, 17px);
+  border: 1px solid rgba(156, 47, 39, .23);
+  border-left: 3px solid var(--accent);
+  border-radius: 4px;
+  background: rgba(250, 246, 236, .89);
+  color: var(--ink);
+  box-shadow: 0 3px 15px rgba(66, 55, 38, .05);
+}
+.reunion-ribbon__heading { display: flex; align-items: flex-start; gap: 11px; }
+.reunion-ribbon__symbol {
+  width: 32px; height: 32px; flex: 0 0 32px;
+  display: grid; place-items: center;
+  color: var(--accent);
+  background: rgba(156,47,39,.07);
+  border: 1px solid rgba(156,47,39,.13);
+}
+.reunion-ribbon__symbol svg { width: 17px; height: 17px; }
+.reunion-ribbon__heading-text { display: flex; flex-wrap: wrap; align-items: baseline; gap: 3px 9px; min-width: 0; flex: 1; }
+.reunion-ribbon__eyebrow {
+  flex-basis: 100%; color: var(--accent);
+  font-size: .61rem; letter-spacing: .13em; font-weight: 700;
+}
+.reunion-ribbon__heading-text strong {
+  font-family: var(--serif);
+  font-size: clamp(.86rem, 1.2vw, .98rem); font-weight: 650; line-height: 1.55;
+}
+.reunion-ribbon__count { font-size: .68rem; color: var(--muted); white-space: nowrap; }
+.reunion-ribbon__dismiss {
+  flex: 0 0 36px; width: 36px; height: 36px;
+  display: grid; place-items: center;
+  background: transparent; border: 1px solid transparent; border-radius: 4px;
+  color: var(--muted); padding: 0;
+}
+.reunion-ribbon__dismiss:hover { border-color: var(--line); background: rgba(255,255,255,.45); }
+.reunion-ribbon__dismiss svg { width: 16px; height: 16px; }
+.reunion-ribbon__note { color: var(--muted); font-size: .73rem; line-height: 1.65; margin: 8px 0 11px; }
+.reunion-ribbon__list {
+  display: grid; min-width: 0; gap: 0;
+  max-height: 270px;
+  overflow-y: auto; overscroll-behavior: contain;
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+}
+.reunion-ribbon__item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.reunion-ribbon__item:last-child { border-bottom: 0; }
+.reunion-ribbon__item-content { display: grid; min-width: 0; gap: 2px; }
+.reunion-ribbon__item-content strong {
+  font-family: var(--serif); font-weight: 600;
+  font-size: .94rem; overflow-wrap: anywhere;
+}
+.reunion-ribbon__date { font-size: .64rem; color: var(--muted); }
+.reunion-ribbon__item-content p {
+  max-width: 100%;
+  margin: 2px 0; font-size: .74rem; line-height: 1.5; color: var(--muted);
+  white-space: normal;
+  overflow-wrap: anywhere;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+.reunion-ribbon__source { color: #915147; font-size: .67rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.reunion-ribbon__open {
+  min-height: 42px;
+  display: inline-flex; align-items: center; justify-content: flex-end; gap: 4px;
+  color: var(--accent-dark);
+  border: 1px solid transparent;
+  background: transparent;
+  font-size: .72rem; font-weight: 700;
+  padding: 9px 3px 9px 8px; text-align: right;
+}
+.reunion-ribbon__open:hover { text-decoration: underline; }
+.reunion-ribbon__open svg { width: 14px; height: 14px; flex: 0 0 auto; }
+.reunion-ribbon__expand {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  width: 100%; min-height: 40px;
+  margin-top: 5px; padding: 7px 8px;
+  color: var(--accent-dark); font-size: .73rem; font-weight: 700;
+  border: 1px solid transparent; background: transparent;
+}
+.reunion-ribbon__expand svg { width: 14px; height: 14px; transform: rotate(90deg); }
+.reunion-ribbon__expand[aria-expanded="true"] svg { transform: rotate(-90deg); }
+/* In the long form, the ribbon follows the headword, spans the whole grid, and does not affect other field widths. */
+.entry-form__reunion { min-width: 0; grid-column: 1 / -1; }
+.entry-form__reunion .reunion-ribbon { margin: 5px 0 10px; }
+.quick-add .reunion-ribbon { margin-bottom: 0; }
+/* The save controls remain BEFORE the reunion hint in quick capture. */
+@media (max-width: 480px) {
+  .reunion-ribbon { padding: 11px; }
+  .reunion-ribbon__item { grid-template-columns: minmax(0,1fr); gap: 3px; padding: 9px 0; }
+  .reunion-ribbon__open { justify-content: flex-start; padding: 3px 0; }
+  .reunion-ribbon__list { max-height: min(245px, 34dvh); }
+  .reunion-ribbon__note { font-size: .7rem; }
+  .reunion-ribbon__heading-text strong { font-size: .83rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reunion-ribbon__expand svg { transition: none; }
+}

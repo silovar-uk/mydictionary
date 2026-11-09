@@ -124,7 +124,7 @@ export default function App() {
         <>
           {route === 'today' && <TodayPage entries={entries} tags={tags} onOpen={openEntry} backupDue={backupDue} />}
           {route === 'dictionary' && <DictionaryPage entries={entries} tags={tags} initialQuery={query} onQueryChange={changeQuery} onOpen={openEntry} />}
-          {route === 'add' && <AddPage />}
+          {route === 'add' && <AddPage entries={entries} onOpen={openEntry} />}
           {route === 'open' && <OpenPage entries={entries} tags={tags} onOpen={openEntry} />}
           {route === 'data' && <DataPage entries={entries} tags={tags} />}
         </>
