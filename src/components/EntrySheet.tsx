@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { KeyboardEvent, ReactNode } from 'react'
 import type { DictionaryEntry, Tag } from '../domain/types'
 import { ENTRY_TYPE_LABELS, SOURCE_TYPE_LABELS, STATUS_LABELS } from '../domain/types'
@@ -57,9 +57,50 @@ function EmptyValue({ children = 'タップして追加' }: { children?: ReactNo
 
 export function EntrySheet({ entry: initialEntry, tags, onClose, onChanged }: Props) {
   const [entry, setEntry] = useState(initialEntry)
+  const sheetRef = useRef<HTMLElement>(null)
+  const closeButtonRef = useRef<HTMLButtonElement>(null)
   const [editing, setEditing] = useState(false)
   const [editingSection, setEditingSection] = useState<EntryEditSection | null>(null)
   const entryTags = useMemo(() => entry.tagIds.map((id) => tags.find((tag) => tag.id === id)).filter((tag): tag is Tag => Boolean(tag)), [entry, tags])
+
+  useEffect(() => {
+    const returnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    closeButtonRef.current?.focus()
+    return () => {
+      document.body.style.overflow = previousOverflow
+      if (returnFocus?.isConnected) returnFocus.focus()
+    }
+  }, [])
+
+  useEffect(() => {
+    if (editing || editingSection) return
+    const handleKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (event.isComposing) return
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        onClose()
+        return
+      }
+      if (event.key !== 'Tab') return
+      const focusable = Array.from(sheetRef.current?.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), a[href], input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex="0"]'
+      ) ?? []).filter((element) => element.getClientRects().length > 0)
+      if (!focusable.length) return
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [editing, editingSection, onClose])
 
   useEffect(() => {
     const timer = window.setTimeout(() => void markEntryViewed(entry.id), 2_000)
@@ -96,13 +137,13 @@ export function EntrySheet({ entry: initialEntry, tags, onClose, onChanged }: Pr
   return (
     <>
       <div className="sheet-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
-        <article className="sheet entry-sheet" role="dialog" aria-modal="true" aria-labelledby="entry-title">
+        <article ref={sheetRef} className="sheet entry-sheet" role="dialog" aria-modal="true" aria-labelledby="entry-title">
           <header className="entry-sheet__header">
             <div>
               <div className="entry-index">{ENTRY_TYPE_LABELS[entry.entryType]}・{STATUS_LABELS[entry.status]}</div>
               <div className="entry-sheet__edit-hint">各項目をタップして編集</div>
             </div>
-            <button className="icon-button" type="button" onClick={onClose} aria-label="閉じる"><Icon name="close" /></button>
+            <button ref={closeButtonRef} className="icon-button" type="button" onClick={onClose} aria-label="閉じる"><Icon name="close" /></button>
           </header>
 
           <div
