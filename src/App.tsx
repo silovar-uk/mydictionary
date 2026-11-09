@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { SyncIndicator } from './components/SyncPanel'
+import { AppUpdateNotice } from './components/AppUpdateNotice'
 import { capturePairLink, startAutoSync } from './services/sync'
 import { EntrySheet } from './components/EntrySheet'
 import { Icon } from './components/Icon'
@@ -83,6 +84,7 @@ export default function App() {
       <nav className="bottom-nav" aria-label="メインメニュー">
         {navItems.map((item) => <button key={item.route} className={`${route === item.route ? 'is-active' : ''} ${item.route === 'add' ? 'bottom-nav__add' : ''}`} type="button" onClick={() => goTo(item.route)}><span><Icon name={item.icon} /></span><small>{item.label}</small></button>)}
       </nav>
+      <AppUpdateNotice />
       {selectedEntry && <EntrySheet entry={selectedEntry} tags={tags} onClose={() => setSelectedEntry(null)} onChanged={(changed) => { if (changed) setSelectedEntry(changed) }} />}
     </div>
   )

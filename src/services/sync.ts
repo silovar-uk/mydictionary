@@ -262,8 +262,12 @@ function mergeTag(base: Tag | undefined, local: Tag | undefined, remote: Tag | u
   conflicts: SyncConflict[], choices: Choices): Tag | undefined {
   if (!local) return remote
   if (!remote) return local
-  const name = choose(base?.name, local.name, remote.name, 'tag:' + local.id + ':name',
-    local.name, 'タグ名', conflicts, choices) as string
+  // Name variations that normalize to the same tag should not interrupt
+  // first-device pairing with a spurious conflict (e.g. "Book" vs "book").
+  const name = local.normalizedName === remote.normalizedName
+    ? (base?.name || local.name)
+    : choose(base?.name, local.name, remote.name, 'tag:' + local.id + ':name',
+        local.name, 'タグ名', conflicts, choices) as string
   return { id: local.id, name, normalizedName: normalizeText(name),
     createdAt: earlier(local.createdAt, remote.createdAt), updatedAt: later(local.updatedAt, remote.updatedAt) }
 }
