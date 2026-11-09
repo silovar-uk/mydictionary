@@ -28,6 +28,15 @@ describe('multi-device merge safety', () => {
     expect(merged.entries.map((x) => x.id)).toEqual(['local', 'remote'])
     expect(conflicts).toEqual([])
   })
+  it('keeps two separately captured same-spelling words with distinct meanings and IDs', () => {
+    const first = entry('pc', { headword: '余白', normalizedHeadword: '余白', whySaved: '仕事の計画' })
+    const second = entry('phone', { headword: '余白', normalizedHeadword: '余白', whySaved: '小説の読後感' })
+    const { merged, conflicts } = merge(null, payload([first]), payload([second]), {})
+    expect(conflicts).toEqual([])
+    expect(merged.entries).toHaveLength(2)
+    expect(merged.entries.map((value) => value.id)).toEqual(['pc', 'phone'])
+    expect(merged.entries.map((value) => value.whySaved)).toEqual(['仕事の計画', '小説の読後感'])
+  })
   it('merges independent fields edited from the same base', () => {
     const original = entry('a')
     const { merged, conflicts } = merge(payload([original]),
