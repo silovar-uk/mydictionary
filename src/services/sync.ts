@@ -381,7 +381,7 @@ export async function syncNow(choices: Choices = {}): Promise<void> {
   try { await task } finally { active = null }
 }
 export function scheduleSync(delay = 1000) {
-  if (!meta.enabled || meta.phase === 'conflict') return
+  if (!meta.enabled || meta.phase === 'conflict' || incomingPair) return
   if (meta.phase !== 'syncing') setMeta({ phase: 'pending' })
   if (navigator.onLine === false) return
   if (autoTimer) clearTimeout(autoTimer)
@@ -396,7 +396,7 @@ export function startAutoSync(): () => void {
   window.addEventListener('focus', onFocus)
   document.addEventListener('visibilitychange', onVisible)
   const polling = setInterval(() => { if (document.visibilityState === 'visible') scheduleSync(200) }, 90_000)
-  if (meta.enabled) scheduleSync(400)
+  if (meta.enabled && !incomingPair) scheduleSync(400)
   return () => {
     dbEvents.removeEventListener('changed', onChange)
     window.removeEventListener('online', onFocus)
