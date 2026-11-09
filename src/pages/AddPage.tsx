@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { EntryFormFields, emptyEntryFormState, entryInputFromForm } from '../components/EntryFormFields'
 import { Icon } from '../components/Icon'
+import { ReunionRibbon } from '../components/ReunionRibbon'
+import type { DictionaryEntry } from '../domain/types'
 import {
   clearAddContext,
   clearAddDraft,
@@ -17,7 +19,7 @@ function isFormEmpty(form: ReturnType<typeof emptyEntryFormState>): boolean {
   return JSON.stringify(form) === JSON.stringify(emptyEntryFormState())
 }
 
-export function AddPage() {
+export function AddPage({ entries, onOpen }: { entries: DictionaryEntry[]; onOpen: (entry: DictionaryEntry) => void }) {
   const [context] = useState(readAddContext)
   const [storedDraft] = useState(readAddDraft)
   const [form, setForm] = useState(() => ({
@@ -31,6 +33,7 @@ export function AddPage() {
   const [bulk, setBulk] = useState('')
   const [bulkMessage, setBulkMessage] = useState('')
   const [busy, setBusy] = useState(false)
+  const [isComposing, setIsComposing] = useState(false)
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -44,6 +47,12 @@ export function AddPage() {
     if (!isFormEmpty(form)) writeAddDraft(form)
     clearAddContext()
     navigate('dictionary')
+  }
+
+  function openPrevious(entry: DictionaryEntry) {
+    // Store the latest input immediately; the normal 280ms debounce may not have fired yet.
+    if (!isFormEmpty(form)) writeAddDraft(form)
+    onOpen(entry)
   }
 
   function discardDraft() {
@@ -102,6 +111,8 @@ export function AddPage() {
           <EntryFormFields
             value={form}
             onChange={setForm}
+            onHeadwordCompositionChange={setIsComposing}
+            afterHeadword={<ReunionRibbon entries={entries} headword={form.headword} isComposing={isComposing} onOpenPrevious={openPrevious} />}
             autoFocus={!draftRestored}
             onSave={() => { void saveEntry() }}
             saving={saving}
