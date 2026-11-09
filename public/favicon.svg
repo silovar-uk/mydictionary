@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <title>私辞典</title>
+  <rect width="64" height="64" rx="12" fill="#2e2c28"/>
+  <rect x="8" y="8" width="48" height="48" rx="3" fill="#f5f0e4"/>
+  <path d="M48 8h8v20l-4-3-4 3V8Z" fill="#9c2f27"/>
+  <text x="31" y="46" fill="#2e2c28" font-family="Yu Mincho, Hiragino Mincho ProN, Noto Serif CJK JP, serif" font-size="39" font-weight="700" text-anchor="middle">私</text>
+</svg>
