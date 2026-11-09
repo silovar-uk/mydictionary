@@ -349,7 +349,7 @@ export async function syncNow(choices: Choices = {}): Promise<void> {
         }
         // A clean sync must not rewrite IndexedDB or emit a change event:
         // otherwise the change listener can create a never-ending sync loop.
-        if (equal(local, merged)) {
+        if (equal(local.entries, merged.entries) && equal(local.tags, merged.tags)) {
           await writeBase(merged)
           setMeta({ phase: 'ok', lastSyncedAt: new Date().toISOString(), lastError: '' })
           return
@@ -381,8 +381,9 @@ export async function syncNow(choices: Choices = {}): Promise<void> {
   try { await task } finally { active = null }
 }
 export function scheduleSync(delay = 1000) {
-  if (!meta.enabled || meta.phase === 'conflict' || navigator.onLine === false) return
+  if (!meta.enabled || meta.phase === 'conflict') return
   if (meta.phase !== 'syncing') setMeta({ phase: 'pending' })
+  if (navigator.onLine === false) return
   if (autoTimer) clearTimeout(autoTimer)
   autoTimer = setTimeout(() => { void syncNow().catch(() => undefined) }, delay)
 }
