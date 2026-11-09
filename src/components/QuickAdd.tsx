@@ -3,18 +3,23 @@ import { createEntry } from '../services/entries'
 import { splitTags } from '../domain/normalize'
 import { navigate } from '../lib/navigation'
 import { Icon } from './Icon'
+import { ReunionRibbon } from './ReunionRibbon'
+import type { DictionaryEntry } from '../domain/types'
 
 interface Props {
   compact?: boolean
   onSaved?: (id: string) => void
+  entries: DictionaryEntry[]
+  onOpenPrevious: (entry: DictionaryEntry) => void
 }
 
-export function QuickAdd({ compact = false, onSaved }: Props) {
+export function QuickAdd({ compact = false, onSaved, entries, onOpenPrevious }: Props) {
   const [headword, setHeadword] = useState('')
   const [memo, setMemo] = useState('')
   const [tags, setTags] = useState('')
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
+  const [isComposing, setIsComposing] = useState(false)
   const inputRef = useRef<HTMLTextAreaElement | null>(null)
 
   async function save(continueAdding = false) {
@@ -55,6 +60,9 @@ export function QuickAdd({ compact = false, onSaved }: Props) {
           ref={inputRef}
           value={headword}
           onChange={(event) => setHeadword(event.target.value)}
+          onCompositionStart={() => setIsComposing(true)}
+          onCompositionEnd={() => setIsComposing(false)}
+          onBlur={() => setIsComposing(false)}
           placeholder="気になった言葉を、そのまま"
           rows={compact ? 2 : 3}
           maxLength={10_000}
@@ -82,6 +90,7 @@ export function QuickAdd({ compact = false, onSaved }: Props) {
         )}
       </div>
       <div className="status-message" aria-live="polite">{message}</div>
+      <ReunionRibbon entries={entries} headword={headword} isComposing={isComposing} onOpenPrevious={onOpenPrevious} />
     </section>
   )
 }
