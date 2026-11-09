@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import { SyncIndicator } from './components/SyncPanel'
+import { capturePairLink, startAutoSync } from './services/sync'
 import { EntrySheet } from './components/EntrySheet'
 import { Icon } from './components/Icon'
 import { db } from './db/database'
@@ -14,6 +16,7 @@ import { TodayPage } from './pages/TodayPage'
 
 export default function App() {
   const route = useRoute()
+  useEffect(() => { if (capturePairLink()) navigate('data'); return startAutoSync() }, [])
   const { entries, tags, loading } = useDictionaryData()
   const [selectedEntry, setSelectedEntry] = useState<DictionaryEntry | null>(null)
   const [query, setQuery] = useState(() => readDictionaryViewState().query)
@@ -66,6 +69,7 @@ export default function App() {
       <header className="topbar">
         <button className="brand" type="button" onClick={() => navigate('today')}><span className="brand__mark">私</span><span>私辞典</span></button>
         <button className="top-search" type="button" onClick={() => navigate('dictionary')}><Icon name="search" /><span>{query || '辞典を検索'}</span></button>
+        <SyncIndicator onOpen={() => navigate('data')} />
       </header>
       {loading ? <div className="loading-page"><div className="book-loader">辞</div><span>頁をひらいています</span></div> : (
         <>
