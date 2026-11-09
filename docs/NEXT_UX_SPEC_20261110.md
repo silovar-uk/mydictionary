@@ -3,7 +3,7 @@
 - 版：v1.0（2026-11-10）
 - 対象リポジトリ：https://github.com/silovar-uk/mydictionary
 - 現在の公開版：https://silovar-uk.github.io/mydictionary/
-- ステータス：**実装前の仕様**。この文書の登録はUI機能の実装・本番公開を意味しない。
+- ステータス：**Phase 0 実装済み（PR #21、CI成功）。実機UX確認・GitHub Pagesへの公開反映は別途確認**。Phase 1以降は未実装。
 - 関連文書：[UX再設計](./UX_REDESIGN_20261110.md)、[端末間同期](./SYNC_DESIGN.md)、[実行プロンプト](./NEXT_UX_EXECUTION_PROMPT_20261110.md)
 
 ## 0. 結論（意思決定ログ）
@@ -245,3 +245,26 @@ interface ReunionRibbonProps {
 - セキュリティ：候補をサーバー送信しない。同期鍵や共有リンクを公開ログへ含めない。
 - 保守：Pure domain logic、read-only component、既存create/save flowを分離。
 - 各Phaseは別PRで実装し、ユーザーのデータに触れる変更はバックアップ・復元・同期に関する追加テストを必須とする。
+
+## 11. Phase 0 実装記録（2026-11-10）
+
+- PR：[実装PR #21](https://github.com/silovar-uk/mydictionary/pull/21)
+- 再会候補判定：`src/domain/reunion.ts`、`src/domain/reunion.test.ts`
+- UI：`src/components/ReunionRibbon.tsx`、`src/styles/reunion.css`
+- 接続：`src/components/QuickAdd.tsx`、`src/pages/AddPage.tsx`、`src/pages/TodayPage.tsx`、`src/components/EntryFormFields.tsx`、`src/App.tsx`
+- キーボード復帰：`src/components/EntrySheet.tsx` の初期フォーカス、Escape、Tab循環、閉じた後のフォーカス復帰
+- 保全テスト：`src/services/sync.test.ts` に同表記・異なるIDの別端末マージ試験を追加
+- Phase 0は**閲覧だけ**。保存API・DB version・Entry構造・同期Payload・JSONバックアップ形式の変更なし。
+- **CI**：型チェック・Vitest全テスト・ビルド成功。これは実機上の動作確認を意味しない。
+
+### 受け入れ結果の区別
+- 自動テスト確認：AC-01（空欄/候補なし）、AC-02（正規化）、AC-03（別IDで独立）、AC-04の候補判定の非破壊性、AC-05（多数と順序）、AC-06（削除済み除外）、AC-10の独立IDのマージ。
+- 実装コードで対応、実機確認は未完：AC-07（入力中の過去記録閲覧）、AC-08（IME）、AC-09（オフライン）、AC-11（キーボード/スクリーンリーダー）、AC-12（各画面幅）。
+- 一部のみ検証：AC-13（10,000件のロジックは試験したが、描画の体感速度の計測は未実施）、AC-14（CIでの回帰は検証したが、端末間同期とJSON復元の実機E2Eは未実施）、AC-15（保存処理を変えていないが、実データ取得失敗時の手動検証は未実施）。
+- 詳細閲覧では、既存仕様どおり閲覧回数を更新する場合がある。「リボンを表示しただけ」は既存記録に書き込まない。
+
+### 安全確認と残課題
+- 候補の内容はローカルの`entries`配列から抽出し、リボンのためのネットワーク呼び出しはない。
+- 同一表記の記録は意味が異なり得るため、UIは**「この表記」**と表現する。
+- QuickAddの案内を保存操作の後ろに配置。AddPageでは入力欄の下に配置し、入力中の下書きを閲覧直前に保存。
+- Phase 1/2への着手は実利用による登録時間・利用価値・安全性の観察を踏まえて判断。
