@@ -119,6 +119,8 @@ interface Props {
   onSave?: () => void
   saving?: boolean
   saveDisabled?: boolean
+  afterHeadword?: ReactNode
+  onHeadwordCompositionChange?: (composing: boolean) => void
 }
 
 interface SectionProps {
@@ -146,7 +148,7 @@ function EntryFormSection({ id, number, title, description, children }: SectionP
   )
 }
 
-export function EntryFormFields({ value, onChange, autoFocus = false, onSave, saving = false, saveDisabled = false }: Props) {
+export function EntryFormFields({ value, onChange, autoFocus = false, onSave, saving = false, saveDisabled = false, afterHeadword, onHeadwordCompositionChange }: Props) {
   const formRef = useRef<HTMLDivElement>(null)
   const navRef = useRef<HTMLDivElement>(null)
   const tabRefs = useRef<Partial<Record<SectionId, HTMLButtonElement | null>>>({})
@@ -248,7 +250,8 @@ export function EntryFormFields({ value, onChange, autoFocus = false, onSave, sa
       </nav>
 
       <EntryFormSection id="word" number="01" title="言葉" description="見出し語だけでも保存できる。読みや状態は必要なときに足す。">
-        <label className="field entry-form__field--headword"><span>見出し語 <small>これだけで保存できます</small></span><textarea autoFocus={autoFocus} value={value.headword} onChange={(event) => set('headword', event.target.value)} rows={2} placeholder="気になった言葉や文章" /></label>
+        <label className="field entry-form__field--headword"><span>見出し語 <small>これだけで保存できます</small></span><textarea autoFocus={autoFocus} value={value.headword} onChange={(event) => set('headword', event.target.value)} onCompositionStart={() => onHeadwordCompositionChange?.(true)} onCompositionEnd={() => onHeadwordCompositionChange?.(false)} onBlur={() => onHeadwordCompositionChange?.(false)} rows={2} placeholder="気になった言葉や文章" /></label>
+        {afterHeadword && <div className="entry-form__reunion">{afterHeadword}</div>}
         <label className="check-field entry-form__field--favorite"><input type="checkbox" checked={value.favorite} onChange={(event) => set('favorite', event.target.checked)} /><span>お気に入り</span></label>
         <label className="field entry-form__field--quarter"><span>読み</span><input value={value.reading} onChange={(event) => set('reading', event.target.value)} placeholder="ひらがななど" /></label>
         <label className="field entry-form__field--quarter"><span>種類</span><select value={value.entryType} onChange={(event) => set('entryType', event.target.value as EntryType)}>{Object.entries(ENTRY_TYPE_LABELS).map(([optionValue, label]) => <option key={optionValue} value={optionValue}>{label}</option>)}</select></label>
