@@ -148,7 +148,11 @@ export function SyncPanel({ count }: { count: number }) {
             </fieldset>
           ))}
           <button type="button" className="button button--primary" disabled={busy}
-            onClick={() => void run(() => syncNow(Object.fromEntries(conflicts.map((c) => [c.key, choices[c.key] || 'local']))))}>
+            onClick={() => void run(async () => {
+              const selected = Object.fromEntries(conflicts.map((c) => [c.key, choices[c.key] || 'local']))
+              if (pair && pendingPair()) { await joinPairedSync(selected); setPair(false) }
+              else await syncNow(selected)
+            })}>
             選択した内容で同期
           </button>
         </div>
