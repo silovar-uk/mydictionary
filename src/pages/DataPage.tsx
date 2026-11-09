@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { SyncPanel } from '../components/SyncPanel'
+import { getSyncMeta } from '../services/sync'
 import { Icon } from '../components/Icon'
 import { db, notifyDatabaseChanged } from '../db/database'
 import type { DictionaryEntry, EntryDraft, Tag } from '../domain/types'
@@ -62,6 +63,7 @@ export function DataPage({ entries, tags }: { entries: DictionaryEntry[]; tags: 
     if (extension === 'json') {
       const parsed: unknown = JSON.parse(text)
       if (!validateBackup(parsed)) throw new Error('対応していない、または壊れているバックアップです。')
+      if (getSyncMeta().enabled) throw new Error('同期中は完全復元できません。先に端末間同期の連携を解除し、必要なデータをバックアップしてください。')
       const backup = parsed
       if (!window.confirm(`現在のデータを置き換えて、${backup.counts?.entries ?? backup.entries?.length ?? 0}件を復元しますか？`)) return
       await restoreBackup(backup)
