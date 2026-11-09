@@ -107,7 +107,7 @@ export function capturePairLink(): boolean {
   }
 }
 export function pendingPair(): boolean { return incomingPair !== null }
-export function discardPair(): void { incomingPair = null }
+export function discardPair(): void { incomingPair = null; if (meta.enabled) scheduleSync(200) }
 export function getPairUrl(): string {
   if (!meta.enabled) throw new Error('同期の設定が必要です。')
   const pair: PairInfo = { v: 1, endpoint: ENDPOINT, vaultId: meta.vaultId, secret: meta.secret }
@@ -119,13 +119,29 @@ export function getPairUrl(): string {
 export function enableNewSync(): void {
   setMeta({ enabled: true, vaultId: randomId(18), secret: randomId(32), phase: 'pending', lastSyncedAt: '', lastError: '' })
 }
-export async function joinPairedSync(): Promise<void> {
+export async function joinPairedSync(choices: Choices = {}): Promise<void> {
   if (!incomingPair) throw new Error('連携リンクがありません。')
+  if (active) throw new Error('前の同期が完了してから端末を連携してください。')
   const pair = incomingPair
-  await db.syncState.delete(BASE_KEY)
-  setMeta({ enabled: true, vaultId: pair.vaultId, secret: pair.secret, phase: 'pending', lastError: '', lastSyncedAt: '' })
-  await syncNow()
-  incomingPair = null
+  const previousMeta = { ...meta }
+  const previousBase = await readBase()
+  try {
+    // Only switch the active vault for the duration of the join attempt.
+    // If it fails, restore the previous vault and its three-way merge base.
+    await db.syncState.delete(BASE_KEY)
+    setMeta({ enabled: true, vaultId: pair.vaultId, secret: pair.secret, phase: 'pending', lastError: '', lastSyncedAt: '' })
+    await syncNow(choices)
+    incomingPair = null
+    scheduleSync(400)
+  } catch (error) {
+    if (previousBase) await writeBase(previousBase)
+    else await db.syncState.delete(BASE_KEY)
+    meta = previousMeta
+    if (previousMeta.enabled) localStorage.setItem(META_KEY, json(previousMeta))
+    else localStorage.removeItem(META_KEY)
+    updates.dispatchEvent(new Event('change'))
+    throw error
+  }
 }
 export async function disconnectSync(): Promise<void> {
   if (active) throw new Error('同期が終わってから解除してください。')
