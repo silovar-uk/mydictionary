@@ -5,6 +5,7 @@ export class MyDictionaryDatabase extends Dexie {
   entries!: Table<DictionaryEntry, string>
   tags!: Table<Tag, string>
   settings!: Table<SettingRecord, string>
+  syncState!: Table<SettingRecord, string>
 
   constructor() {
     super('watashi-jiten')
@@ -13,6 +14,8 @@ export class MyDictionaryDatabase extends Dexie {
       tags: '&id,&normalizedName,name,createdAt,updatedAt',
       settings: '&key'
     })
+    // Sync metadata is device-specific; never include it in JSON backups.
+    this.version(2).stores({ syncState: '&key' })
   }
 }
 
