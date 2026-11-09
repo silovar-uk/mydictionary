@@ -4,17 +4,26 @@ import { EmptyState } from '../components/EmptyState'
 import { EntryRow } from '../components/EntryRow'
 import { Icon } from '../components/Icon'
 import { buildDiscoveryPage } from '../domain/discovery'
+import { getRecentlyAdded } from '../domain/recent'
 import type { DictionaryEntry, Tag } from '../domain/types'
 import { ENTRY_TYPE_LABELS } from '../domain/types'
 import { seededRandom } from '../lib/format'
 import { navigate } from '../lib/navigation'
 
-export function TodayPage({ entries, tags, onOpen, backupDue }: { entries: DictionaryEntry[]; tags: Tag[]; onOpen: (entry: DictionaryEntry) => void; backupDue: boolean }) {
+interface Props {
+  entries: DictionaryEntry[]
+  tags: Tag[]
+  onOpen: (entry: DictionaryEntry) => void
+  onViewAllRecent: () => void
+  backupDue: boolean
+}
+
+export function TodayPage({ entries, tags, onOpen, onViewAllRecent, backupDue }: Props) {
   const todaySeed = new Date().toLocaleDateString('sv-SE')
   const todayEntries = useMemo(() => buildDiscoveryPage(entries, 'thoughtful', 4, seededRandom(todaySeed)), [entries, todaySeed])
   const featured = todayEntries[0]
   const leafEntries = todayEntries.slice(1)
-  const recent = entries.slice(0, 4)
+  const recent = useMemo(() => getRecentlyAdded(entries, 5), [entries])
   const growing = entries.filter((entry) => entry.status === 'growing').slice(0, 3)
 
   if (entries.length === 0) {
@@ -33,50 +42,75 @@ export function TodayPage({ entries, tags, onOpen, backupDue }: { entries: Dicti
 
   return (
     <main className="page page--today">
-      <div className="today-workspace">
-        <div className="today-workspace__primary">
-      <section className="today-intro">
+      <header className="today-intro today-intro--practical">
         <div>
-          <div className="eyebrow">TODAY'S ENCOUNTER</div>
-          <h1>今日は、この言葉から。</h1>
+          <div className="eyebrow">YOUR WORDS</div>
+          <h1>今日の書斎</h1>
         </div>
-        <p>{entries.length.toLocaleString('ja-JP')}語のなかから、忘れかけた一語が戻ってきた。</p>
-      </section>
+        <p><strong>{entries.length.toLocaleString('ja-JP')}</strong> 語の記録</p>
+      </header>
 
-      {featured && (
-        <section className="today-cover" aria-label="今日の一語">
-          <span className="today-cover__sheet today-cover__sheet--back" aria-hidden="true" />
-          <span className="today-cover__sheet today-cover__sheet--middle" aria-hidden="true" />
-          <button className="today-cover__face" type="button" onClick={() => onOpen(featured)}>
-            <span className="today-cover__topline">
-              <span>{todaySeed.replaceAll('-', '.')}</span>
-              <span>NO. {String(entries.length).padStart(4, '0')}</span>
-            </span>
-            <span className="today-cover__seal" aria-hidden="true">私</span>
-            <span className="today-cover__reading">{featured.reading || ENTRY_TYPE_LABELS[featured.entryType]}</span>
-            <strong>{featured.headword}</strong>
-            <span className="today-cover__meaning">{featured.shortMeaning || featured.whySaved || featured.encounterContext || 'まだ説明のない言葉。だから、もう一度ひらく。'}</span>
-            <span className="today-cover__action">今日の一語をひらく <Icon name="arrow" /></span>
-          </button>
+      <div className="today-workspace">
+        <section className="today-recent" aria-labelledby="today-recent-heading">
+          <header className="today-recent__heading">
+            <div>
+              <div className="eyebrow">RECENTLY ADDED</div>
+              <h2 id="today-recent-heading">最近追加した言葉</h2>
+              <p>追加した順に、すぐ開ける。</p>
+            </div>
+            <button className="today-recent__all" type="button" onClick={onViewAllRecent}>
+              すべて見る <Icon name="arrow" />
+            </button>
+          </header>
+          <div className="lined-list today-recent__list">
+            {recent.map((entry) => <EntryRow key={entry.id} entry={entry} tags={tags} onOpen={() => onOpen(entry)} />)}
+          </div>
         </section>
-      )}
 
-        </div>
-        <aside className="today-workspace__aside" aria-label="言葉を拾い、育てる">
+        <aside className="today-workspace__aside" aria-label="今日の一語と言葉の登録">
+          {featured && (
+            <section className="today-feature" aria-label="今日の一語">
+              <div className="today-feature__heading">
+                <span className="eyebrow">TODAY'S WORD</span>
+                <span>{todaySeed.replaceAll('-', '.')}</span>
+              </div>
+              <button className="today-feature__card" type="button" onClick={() => onOpen(featured)}>
+                <span className="today-feature__reading">{featured.reading || ENTRY_TYPE_LABELS[featured.entryType]}</span>
+                <strong>{featured.headword}</strong>
+                <span className="today-feature__meaning">{featured.shortMeaning || featured.whySaved || featured.encounterContext || '忘れていた言葉を、もう一度。'}</span>
+                <span className="today-feature__action">この言葉をひらく <Icon name="arrow" /></span>
+              </button>
+            </section>
+          )}
           <QuickAdd compact entries={entries} onOpenPrevious={onOpen} />
           {growing.length > 0 && (
             <section className="section-block today-workspace__growing">
-              <div className="section-heading"><div><div className="eyebrow">STILL GROWING</div><h2>育て途中</h2></div><button className="text-button" type="button" onClick={() => navigate('dictionary')}>すべて見る <Icon name="arrow" /></button></div>
-              <div className="lined-list">{growing.map((entry) => <EntryRow key={entry.id} entry={entry} tags={tags} onOpen={() => onOpen(entry)} />)}</div>
+              <div className="section-heading">
+                <div><div className="eyebrow">STILL GROWING</div><h2>育て途中</h2></div>
+                <button className="text-button" type="button" onClick={() => navigate('dictionary')}>すべて見る <Icon name="arrow" /></button>
+              </div>
+              <div className="lined-list">
+                {growing.map((entry) => <EntryRow key={entry.id} entry={entry} tags={tags} onOpen={() => onOpen(entry)} />)}
+              </div>
             </section>
           )}
         </aside>
       </div>
-      {backupDue && <button className="backup-reminder" type="button" onClick={() => navigate('data')}><Icon name="download" /><span><strong>そろそろバックアップ</strong><small>言葉を端末の外にも残しておく</small></span><Icon name="arrow" /></button>}
+
+      {backupDue && (
+        <button className="backup-reminder" type="button" onClick={() => navigate('data')}>
+          <Icon name="download" />
+          <span><strong>そろそろバックアップ</strong><small>言葉を端末の外にも残しておく</small></span>
+          <Icon name="arrow" />
+        </button>
+      )}
 
       {leafEntries.length > 0 && (
         <section className="section-block section-block--today-leaf">
-          <div className="section-heading"><div><div className="eyebrow">THE REST OF TODAY</div><h2>今日の余白</h2></div><small className="section-note">主役のそばにいた言葉</small></div>
+          <div className="section-heading">
+            <div><div className="eyebrow">THE REST OF TODAY</div><h2>今日の余白</h2></div>
+            <small className="section-note">主役のそばにいた言葉</small>
+          </div>
           <div className="today-leaf paper-page">
             <div className="paper-page__rule"><span>{todaySeed.replaceAll('-', '.')}</span><span>私辞典</span></div>
             {leafEntries.map((entry, index) => (
@@ -94,11 +128,6 @@ export function TodayPage({ entries, tags, onOpen, backupDue }: { entries: Dicti
           </div>
         </section>
       )}
-
-      <section className="section-block">
-        <div className="section-heading"><div><div className="eyebrow">RECENTLY FOUND</div><h2>最近拾った言葉</h2></div></div>
-        <div className="lined-list">{recent.map((entry) => <EntryRow key={entry.id} entry={entry} tags={tags} onOpen={() => onOpen(entry)} />)}</div>
-      </section>
     </main>
   )
 }

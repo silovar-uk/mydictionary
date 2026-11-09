@@ -69,6 +69,12 @@ export default function App() {
     setSelectedEntry(entry)
   }
 
+  function viewRecentlyAdded() {
+    setQuery('')
+    updateDictionaryViewState({ query: '', status: 'all', sort: 'created', scrollY: 0 })
+    navigate('dictionary')
+  }
+
   function changeQuery(value: string) {
     setQuery(value)
     updateDictionaryViewState({ query: value })
@@ -122,7 +128,7 @@ export default function App() {
       <div id="main-content" tabIndex={-1}>
       {loading ? <div className="loading-page"><div className="book-loader">辞</div><span>頁をひらいています</span></div> : (
         <>
-          {route === 'today' && <TodayPage entries={entries} tags={tags} onOpen={openEntry} backupDue={backupDue} />}
+          {route === 'today' && <TodayPage entries={entries} tags={tags} onOpen={openEntry} onViewAllRecent={viewRecentlyAdded} backupDue={backupDue} />}
           {route === 'dictionary' && <DictionaryPage entries={entries} tags={tags} initialQuery={query} onQueryChange={changeQuery} onOpen={openEntry} />}
           {route === 'add' && <AddPage entries={entries} onOpen={openEntry} />}
           {route === 'open' && <OpenPage entries={entries} tags={tags} onOpen={openEntry} />}
