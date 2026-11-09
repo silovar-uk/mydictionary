@@ -25,7 +25,7 @@ export function TodayPage({ entries, tags, onOpen, backupDue }: { entries: Dicti
           <h1>私辞典</h1>
           <p>言葉を拾い、育て、忘れたころにまた開く。</p>
         </section>
-        <QuickAdd compact />
+        <QuickAdd compact entries={entries} onOpenPrevious={onOpen} />
         <EmptyState title="最初の一語を拾う">意味や出典は空欄で大丈夫。引っかかった形のまま置いておける。</EmptyState>
       </main>
     )
@@ -63,7 +63,7 @@ export function TodayPage({ entries, tags, onOpen, backupDue }: { entries: Dicti
 
         </div>
         <aside className="today-workspace__aside" aria-label="言葉を拾い、育てる">
-          <QuickAdd compact />
+          <QuickAdd compact entries={entries} onOpenPrevious={onOpen} />
           {growing.length > 0 && (
             <section className="section-block today-workspace__growing">
               <div className="section-heading"><div><div className="eyebrow">STILL GROWING</div><h2>育て途中</h2></div><button className="text-button" type="button" onClick={() => navigate('dictionary')}>すべて見る <Icon name="arrow" /></button></div>
