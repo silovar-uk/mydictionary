@@ -122,10 +122,10 @@ export function enableNewSync(): void {
 export async function joinPairedSync(): Promise<void> {
   if (!incomingPair) throw new Error('連携リンクがありません。')
   const pair = incomingPair
-  incomingPair = null
   await db.syncState.delete(BASE_KEY)
   setMeta({ enabled: true, vaultId: pair.vaultId, secret: pair.secret, phase: 'pending', lastError: '', lastSyncedAt: '' })
   await syncNow()
+  incomingPair = null
 }
 export async function disconnectSync(): Promise<void> {
   if (active) throw new Error('同期が終わってから解除してください。')
@@ -345,6 +345,13 @@ export async function syncNow(choices: Choices = {}): Promise<void> {
           await writeBase(merged)
           setMeta({ phase: 'pending', lastSyncedAt: new Date().toISOString() })
           scheduleSync(400)
+          return
+        }
+        // A clean sync must not rewrite IndexedDB or emit a change event:
+        // otherwise the change listener can create a never-ending sync loop.
+        if (equal(local, merged)) {
+          await writeBase(merged)
+          setMeta({ phase: 'ok', lastSyncedAt: new Date().toISOString(), lastError: '' })
           return
         }
         await db.transaction('rw', db.entries, db.tags, db.syncState, async () => {
