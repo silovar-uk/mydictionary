@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { SyncPanel } from '../components/SyncPanel'
 import { Icon } from '../components/Icon'
 import { db, notifyDatabaseChanged } from '../db/database'
 import type { DictionaryEntry, EntryDraft, Tag } from '../domain/types'
@@ -80,6 +81,7 @@ export function DataPage({ entries, tags }: { entries: DictionaryEntry[]; tags: 
   return (
     <main className="page">
       <header className="page-heading"><div><div className="eyebrow">YOUR DATA, YOURS</div><h1>データ</h1><p>アプリに閉じ込めず、いつでも全部持ち出せる。</p></div></header>
+      <SyncPanel count={entries.length} />
       <section className="data-card data-card--primary paper-panel">
         <div className="data-card__icon"><Icon name="database" /></div>
         <div><div className="eyebrow">COMPLETE BACKUP</div><h2>完全バックアップ</h2><p>意味、出典、タグ、閲覧履歴を含む。空の状態から丸ごと復元できる形式。</p></div>
