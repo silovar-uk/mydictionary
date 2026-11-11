@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useLayoutEffect, useMemo, useState } from 'react'
 import { EmptyState } from '../components/EmptyState'
 import { EntryRow } from '../components/EntryRow'
 import { Icon } from '../components/Icon'
@@ -18,6 +18,8 @@ interface Props {
 
 export function TodayPage({ entries, tags, onOpen, onViewAllRecent, backupDue }: Props) {
   const todaySeed = new Date().toLocaleDateString('sv-SE')
+
+  useLayoutEffect(() => { window.scrollTo(0, 0) }, [])
   const [randomIndex, setRandomIndex] = useState(0)
   const activeEntries = useMemo(() => entries.filter((entry) => !entry.deletedAt), [entries])
   const randomCandidates = useMemo(
