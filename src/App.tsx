@@ -91,7 +91,7 @@ export default function App() {
   const navItems: { route: Route; label: string; icon: Parameters<typeof Icon>[0]['name'] }[] = [
     { route: 'today', label: '今日', icon: 'home' },
     { route: 'dictionary', label: '辞典', icon: 'book' },
-    { route: 'add', label: '拾う', icon: 'plus' },
+    { route: 'add', label: '追加', icon: 'plus' },
     { route: 'open', label: '開く', icon: 'shuffle' },
     { route: 'data', label: 'データ', icon: 'database' }
   ]
@@ -102,7 +102,7 @@ export default function App() {
       <aside className="desktop-rail" aria-label="私辞典のメニュー">
         <div className="desktop-rail__brand"><span className="desktop-rail__mark">私</span><span><strong>私辞典</strong><small>MY WORDS, MY WORLD</small></span></div>
         <button className="desktop-rail__capture" type="button" onClick={() => goTo('add')}>
-          <Icon name="plus" /> 言葉を拾う
+          <Icon name="plus" /> 言葉を追加
         </button>
         <div className="desktop-rail__group-label">書斎</div>
         <nav className="desktop-rail__nav" aria-label="デスクトップのメインメニュー">
@@ -122,7 +122,7 @@ export default function App() {
       </aside>
       <header className="topbar">
         <button className="brand" type="button" onClick={() => navigate('today')}><span className="brand__mark">私</span><span>私辞典</span></button>
-        <button className="top-search" type="button" onClick={() => setPaletteOpen(true)} aria-label="言葉や操作をすばやく検索"><Icon name="search" /><span>{query || '言葉・意味・出典をすばやく検索'}</span><kbd>Ctrl K</kbd></button>
+        <button className="top-search top-search--icon" type="button" onClick={() => setPaletteOpen(true)} aria-label="言葉を検索" title="検索を開く"><Icon name="search" /></button>
         <SyncIndicator onOpen={() => navigate('data')} />
       </header>
       <div id="main-content" tabIndex={-1}>
