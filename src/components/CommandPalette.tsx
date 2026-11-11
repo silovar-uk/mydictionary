@@ -46,13 +46,13 @@ export function CommandPalette({ open, entries, tags, onClose, onNavigate, onOpe
   const actions: PaletteAction[] = query.trim()
     ? [
         { key: 'search-all', label: `「${query.trim()}」を辞典で検索`, detail: '検索結果をすべて見る', icon: 'search', run: () => onSearch(query.trim()) },
-        { key: 'capture', label: `「${query.trim()}」を新しく拾う`, detail: '新しい言葉として残す', icon: 'plus', run: () => onAdd(query.trim()) }
+        { key: 'capture', label: `「${query.trim()}」を新しく追加`, detail: '新しい言葉として残す', icon: 'plus', run: () => onAdd(query.trim()) }
       ]
     : [
-        { key: 'capture', label: '新しい言葉を拾う', detail: '見出し語だけでも保存できる', icon: 'plus', run: () => onAdd('') },
+        { key: 'capture', label: '新しい言葉を追加', detail: '見出し語だけでも保存できる', icon: 'plus', run: () => onAdd('') },
         { key: 'dictionary', label: '辞典をひらく', detail: 'すべての言葉から探す', icon: 'book', run: () => onNavigate('dictionary') },
         { key: 'open', label: '偶然の一頁をひらく', detail: '忘れていた言葉と再会する', icon: 'shuffle', run: () => onNavigate('open') },
-        { key: 'today', label: '今日の書斎へ', detail: '今日の一語を見る', icon: 'home', run: () => onNavigate('today') },
+        { key: 'today', label: '今日の書斎へ', detail: '最近追加した言葉を見る', icon: 'home', run: () => onNavigate('today') },
         { key: 'data', label: '同期とバックアップ', detail: '大切な言葉を守る', icon: 'database', run: () => onNavigate('data') }
       ]
 

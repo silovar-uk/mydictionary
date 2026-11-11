@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useState } from 'react'
 import { EntryFormFields, emptyEntryFormState, entryInputFromForm } from '../components/EntryFormFields'
 import { Icon } from '../components/Icon'
 import { ReunionRibbon } from '../components/ReunionRibbon'
@@ -35,6 +35,9 @@ export function AddPage({ entries, onOpen }: { entries: DictionaryEntry[]; onOpe
   const [busy, setBusy] = useState(false)
   const [isComposing, setIsComposing] = useState(false)
 
+  // A capture screen must always open at its three primary fields.
+  useLayoutEffect(() => { window.scrollTo(0, 0) }, [])
+
   useEffect(() => {
     const timer = window.setTimeout(() => {
       if (isFormEmpty(form)) clearAddDraft()
@@ -43,14 +46,18 @@ export function AddPage({ entries, onOpen }: { entries: DictionaryEntry[]; onOpe
     return () => window.clearTimeout(timer)
   }, [form])
 
-  function returnToDictionary() {
+  function goBack() {
     if (!isFormEmpty(form)) writeAddDraft(form)
-    clearAddContext()
-    navigate('dictionary')
+    if (context?.fromDictionary) {
+      clearAddContext()
+      navigate('dictionary')
+    } else {
+      navigate('today')
+    }
   }
 
   function openPrevious(entry: DictionaryEntry) {
-    // Store the latest input immediately; the normal 280ms debounce may not have fired yet.
+    // Save immediately before showing a previous record, even while the debounce is pending.
     if (!isFormEmpty(form)) writeAddDraft(form)
     onOpen(entry)
   }
@@ -95,45 +102,93 @@ export function AddPage({ entries, onOpen }: { entries: DictionaryEntry[]; onOpe
   }
 
   return (
-    <main className="page page--add">
-      <header className="page-heading"><div><div className="eyebrow">CREATE ENTRY</div><h1>拾う</h1><p>言葉、意味、出会い、出典、活用。わかるところまで、ひと続きの用紙に残す。</p></div></header>
+    <main className="page page--add page--add-compact">
+      <header className="add-compact__header">
+        <button className="add-compact__back" type="button" onClick={goBack} aria-label={context?.fromDictionary ? '辞典に戻る' : '今日に戻る'}>
+          <Icon name="arrow" />
+        </button>
+        <h1>追加</h1>
+        <button
+          className="button button--primary add-compact__save"
+          type="submit"
+          form="add-compact-form"
+          disabled={!form.headword.trim() || saving}
+        >{saving ? '保存中…' : '保存'}</button>
+      </header>
 
-      {context?.fromDictionary && <div className="add-return-context"><button type="button" onClick={returnToDictionary}><Icon name="arrow" /> 辞典に戻る</button><span>{context.query ? `「${context.query}」の検索結果から` : '見ていた辞典の場所へ戻れます'}</span></div>}
-      {draftRestored && <div className="draft-restored" role="status"><span><strong>入力途中の内容を復元しました</strong><small>画面を離れても、この端末に下書きが残ります。</small></span><button type="button" onClick={discardDraft}>下書きを消す</button></div>}
-
-      <section className="entry-create-panel paper-panel">
-        <div className="entry-create-panel__intro">
-          <div className="eyebrow">NEW ENTRY</div>
-          <h2>辞書項目をつくる</h2>
-          <p className="muted">見出し語だけで保存できる。残りの項目は、あとから少しずつ育てられる。</p>
+      {draftRestored && (
+        <div className="add-compact__restored" role="status">
+          <span>下書きを復元しました</span>
+          <button type="button" onClick={discardDraft}>破棄</button>
         </div>
-        <div className="entry-create-panel__body">
-          <EntryFormFields
-            value={form}
-            onChange={setForm}
-            onHeadwordCompositionChange={setIsComposing}
-            afterHeadword={<ReunionRibbon entries={entries} headword={form.headword} isComposing={isComposing} onOpenPrevious={openPrevious} />}
-            autoFocus={!draftRestored}
-            onSave={() => { void saveEntry() }}
-            saving={saving}
-            saveDisabled={!form.headword.trim()}
+      )}
+
+      <form
+        id="add-compact-form"
+        className="add-compact__form"
+        onSubmit={(event) => { event.preventDefault(); void saveEntry() }}
+      >
+        <label className="add-compact__field">
+          <span>名前 <small>必須</small></span>
+          <textarea
+            rows={1}
+            maxLength={10_000}
+            value={form.headword}
+            onChange={(event) => setForm((current) => ({ ...current, headword: event.target.value }))}
+            onCompositionStart={() => setIsComposing(true)}
+            onCompositionEnd={() => setIsComposing(false)}
+            onBlur={() => setIsComposing(false)}
+            placeholder="言葉や用語の名前"
           />
-          {error && <p className="error-text entry-save-error" role="alert">{error}</p>}
-        </div>
-        <div className="entry-create-actions">
-          <span>{form.headword.trim() ? '未入力の項目は、あとから編集できます。' : '見出し語を入れると保存できます。'}</span>
-          <button className="button button--primary" type="button" onClick={() => void saveEntry()} disabled={saving || !form.headword.trim()}><Icon name="plus" /> {saving ? '保存中…' : '保存して辞典へ'}</button>
-        </div>
-      </section>
+        </label>
 
-      <section className="bulk-import paper-panel">
-        <div className="eyebrow">BULK CAPTURE</div>
-        <h2>まとめて拾う</h2>
-        <p className="muted">1行につき1項目。<code>言葉｜一言メモ｜タグ</code>でも取り込める。完了後は辞典一覧へ移動する。</p>
-        <label className="field"><span>貼り付ける</span><textarea value={bulk} onChange={(event) => setBulk(event.target.value)} rows={8} placeholder={'解像度を上げる\n偶然を設計する｜忘れた言葉に戻る仕組み｜企画, 言葉'} /></label>
-        <div className="action-row"><button className="button button--primary" type="button" onClick={() => void importBulk()} disabled={busy || !bulk.trim()}><Icon name="plus" /> {busy ? '取込中…' : `${textToDrafts(bulk).length || ''}件を拾って一覧へ`}</button></div>
-        <div className="status-message" aria-live="polite">{bulkMessage}</div>
-      </section>
+        <label className="add-compact__field">
+          <span>よみ <small>任意</small></span>
+          <input
+            type="text"
+            value={form.reading}
+            onChange={(event) => setForm((current) => ({ ...current, reading: event.target.value }))}
+            placeholder="ひらがななど"
+          />
+        </label>
+
+        <label className="add-compact__field">
+          <span>ひとこと <small>任意</small></span>
+          <textarea
+            rows={2}
+            value={form.shortMeaning}
+            onChange={(event) => setForm((current) => ({ ...current, shortMeaning: event.target.value }))}
+            placeholder="意味や覚えておきたいこと"
+          />
+        </label>
+
+        <div className="add-compact__reunion">
+          <ReunionRibbon entries={entries} headword={form.headword} isComposing={isComposing} onOpenPrevious={openPrevious} />
+        </div>
+
+        {error && <p className="error-text add-compact__error" role="alert">{error}</p>}
+
+        <details className="add-compact__details">
+          <summary><Icon name="edit" /><span>詳細項目を追加</span><Icon name="arrow" /></summary>
+          <p className="add-compact__details-note">出典・用例・タグなど。保存後も編集できます。</p>
+          <EntryFormFields value={form} onChange={setForm} advancedOnly />
+        </details>
+      </form>
+
+      <details className="add-compact__bulk">
+        <summary>まとめて追加する</summary>
+        <div className="add-compact__bulk-body">
+          <p>1行に1項目。「言葉｜ひとこと｜タグ」でも追加できます。</p>
+          <label className="field">
+            <span>貼り付ける</span>
+            <textarea value={bulk} onChange={(event) => setBulk(event.target.value)} rows={6} placeholder="アブダクション" />
+          </label>
+          <button className="button button--primary" type="button" onClick={() => void importBulk()} disabled={busy || !bulk.trim()}>
+            {busy ? '追加中…' : 'まとめて保存'}
+          </button>
+          <div className="status-message" aria-live="polite">{bulkMessage}</div>
+        </div>
+      </details>
     </main>
   )
 }

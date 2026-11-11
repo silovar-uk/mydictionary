@@ -116,6 +116,7 @@ interface Props {
   value: EntryFormState
   onChange: (next: EntryFormState) => void
   autoFocus?: boolean
+  advancedOnly?: boolean
   onSave?: () => void
   saving?: boolean
   saveDisabled?: boolean
@@ -148,7 +149,7 @@ function EntryFormSection({ id, number, title, description, children }: SectionP
   )
 }
 
-export function EntryFormFields({ value, onChange, autoFocus = false, onSave, saving = false, saveDisabled = false, afterHeadword, onHeadwordCompositionChange }: Props) {
+export function EntryFormFields({ value, onChange, autoFocus = false, advancedOnly = false, onSave, saving = false, saveDisabled = false, afterHeadword, onHeadwordCompositionChange }: Props) {
   const formRef = useRef<HTMLDivElement>(null)
   const navRef = useRef<HTMLDivElement>(null)
   const tabRefs = useRef<Partial<Record<SectionId, HTMLButtonElement | null>>>({})
@@ -164,6 +165,7 @@ export function EntryFormFields({ value, onChange, autoFocus = false, onSave, sa
   }
 
   useEffect(() => {
+    if (advancedOnly) return
     let frame = 0
 
     const updateCurrentSection = () => {
@@ -201,9 +203,10 @@ export function EntryFormFields({ value, onChange, autoFocus = false, onSave, sa
       window.removeEventListener('resize', scheduleUpdate)
       if (frame) window.cancelAnimationFrame(frame)
     }
-  }, [])
+  }, [advancedOnly])
 
   useEffect(() => {
+    if (advancedOnly) return
     const nav = navRef.current
     const tab = tabRefs.current[activeSection]
     if (!nav || !tab) return
@@ -211,11 +214,11 @@ export function EntryFormFields({ value, onChange, autoFocus = false, onSave, sa
     const targetLeft = tab.offsetLeft - (nav.clientWidth - tab.offsetWidth) / 2
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     nav.scrollTo({ left: Math.max(0, targetLeft), behavior: reducedMotion ? 'auto' : 'smooth' })
-  }, [activeSection])
+  }, [activeSection, advancedOnly])
 
   return (
     <div ref={formRef} className="entry-form">
-      <nav className="entry-form__nav" aria-label="入力項目の目次">
+      {!advancedOnly && <nav className="entry-form__nav" aria-label="入力項目の目次">
         <div ref={navRef} className="entry-form__nav-track">
           {FORM_SECTIONS.map((section) => {
             const hasContent = sectionHasContent(section.id, value)
@@ -247,20 +250,22 @@ export function EntryFormFields({ value, onChange, autoFocus = false, onSave, sa
             {saving ? '保存中' : '保存'}
           </button>
         )}
-      </nav>
+      </nav>}
 
       <EntryFormSection id="word" number="01" title="言葉" description="見出し語だけでも保存できる。読みや状態は必要なときに足す。">
-        <label className="field entry-form__field--headword"><span>見出し語 <small>これだけで保存できます</small></span><textarea autoFocus={autoFocus} value={value.headword} onChange={(event) => set('headword', event.target.value)} onCompositionStart={() => onHeadwordCompositionChange?.(true)} onCompositionEnd={() => onHeadwordCompositionChange?.(false)} onBlur={() => onHeadwordCompositionChange?.(false)} rows={2} placeholder="気になった言葉や文章" /></label>
-        {afterHeadword && <div className="entry-form__reunion">{afterHeadword}</div>}
+        {!advancedOnly && <>
+          <label className="field entry-form__field--headword"><span>見出し語 <small>これだけで保存できます</small></span><textarea autoFocus={autoFocus} value={value.headword} onChange={(event) => set('headword', event.target.value)} onCompositionStart={() => onHeadwordCompositionChange?.(true)} onCompositionEnd={() => onHeadwordCompositionChange?.(false)} onBlur={() => onHeadwordCompositionChange?.(false)} rows={2} placeholder="気になった言葉や文章" /></label>
+          {afterHeadword && <div className="entry-form__reunion">{afterHeadword}</div>}
+        </>}
         <label className="check-field entry-form__field--favorite"><input type="checkbox" checked={value.favorite} onChange={(event) => set('favorite', event.target.checked)} /><span>お気に入り</span></label>
-        <label className="field entry-form__field--quarter"><span>読み</span><input value={value.reading} onChange={(event) => set('reading', event.target.value)} placeholder="ひらがななど" /></label>
+        {!advancedOnly && <label className="field entry-form__field--quarter"><span>読み</span><input value={value.reading} onChange={(event) => set('reading', event.target.value)} placeholder="ひらがななど" /></label>}
         <label className="field entry-form__field--quarter"><span>種類</span><select value={value.entryType} onChange={(event) => set('entryType', event.target.value as EntryType)}>{Object.entries(ENTRY_TYPE_LABELS).map(([optionValue, label]) => <option key={optionValue} value={optionValue}>{label}</option>)}</select></label>
         <label className="field entry-form__field--quarter"><span>言語</span><select value={value.language} onChange={(event) => set('language', event.target.value as DictionaryEntry['language'])}>{Object.entries(LANGUAGE_LABELS).map(([optionValue, label]) => <option key={optionValue} value={optionValue}>{label}</option>)}</select></label>
         <label className="field entry-form__field--quarter"><span>状態</span><select value={value.status} onChange={(event) => set('status', event.target.value as EntryStatus)}>{Object.entries(STATUS_LABELS).map(([optionValue, label]) => <option key={optionValue} value={optionValue}>{label}</option>)}</select></label>
       </EntryFormSection>
 
       <EntryFormSection id="meaning" number="02" title="意味" description="辞書の説明ではなく、自分がどう受け取ったかまで残す。">
-        <label className="field field--wide entry-form__field--lead"><span>一言での意味</span><input value={value.shortMeaning} onChange={(event) => set('shortMeaning', event.target.value)} placeholder="一覧で見返したときに思い出せる一文" /></label>
+        {!advancedOnly && <label className="field field--wide entry-form__field--lead"><span>一言での意味</span><input value={value.shortMeaning} onChange={(event) => set('shortMeaning', event.target.value)} placeholder="一覧で見返したときに思い出せる一文" /></label>}
         <label className="field field--wide"><span>詳しい意味・自分なりの解釈</span><textarea value={value.meaning} onChange={(event) => set('meaning', event.target.value)} rows={4} placeholder="意味、ニュアンス、似た言葉との違いなど" /></label>
       </EntryFormSection>
 
