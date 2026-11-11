@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useState } from 'react'
 import { EntryFormFields, emptyEntryFormState, entryInputFromForm } from '../components/EntryFormFields'
 import { Icon } from '../components/Icon'
 import { ReunionRibbon } from '../components/ReunionRibbon'
@@ -34,6 +34,9 @@ export function AddPage({ entries, onOpen }: { entries: DictionaryEntry[]; onOpe
   const [bulkMessage, setBulkMessage] = useState('')
   const [busy, setBusy] = useState(false)
   const [isComposing, setIsComposing] = useState(false)
+
+  // A capture screen must always open at its three primary fields.
+  useLayoutEffect(() => { window.scrollTo(0, 0) }, [])
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
