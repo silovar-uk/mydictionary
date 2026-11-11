@@ -52,7 +52,7 @@ export function CommandPalette({ open, entries, tags, onClose, onNavigate, onOpe
         { key: 'capture', label: '新しい言葉を追加', detail: '見出し語だけでも保存できる', icon: 'plus', run: () => onAdd('') },
         { key: 'dictionary', label: '辞典をひらく', detail: 'すべての言葉から探す', icon: 'book', run: () => onNavigate('dictionary') },
         { key: 'open', label: '偶然の一頁をひらく', detail: '忘れていた言葉と再会する', icon: 'shuffle', run: () => onNavigate('open') },
-        { key: 'today', label: '今日の書斎へ', detail: '今日の一語を見る', icon: 'home', run: () => onNavigate('today') },
+        { key: 'today', label: '今日の書斎へ', detail: '最近追加した言葉を見る', icon: 'home', run: () => onNavigate('today') },
         { key: 'data', label: '同期とバックアップ', detail: '大切な言葉を守る', icon: 'database', run: () => onNavigate('data') }
       ]
 
