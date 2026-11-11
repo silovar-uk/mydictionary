@@ -71,7 +71,7 @@ export function TodayPage({ entries, tags, onOpen, onViewAllRecent, backupDue }:
         </section>
       )}
 
-      <div className="today-workspace">
+      <div className={growing.length > 0 ? 'today-workspace' : 'today-workspace today-workspace--single'}>
         <section className="today-recent" aria-labelledby="today-recent-heading">
           <header className="today-recent__heading">
             <div>
